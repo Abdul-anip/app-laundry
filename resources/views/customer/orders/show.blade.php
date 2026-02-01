@@ -57,6 +57,49 @@
             <span>Total Bayar</span>
             <span>Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
         </div>
+        @if(in_array($order->status, ['finished', 'delivered']))
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 2rem 0;">
+            
+            @if($order->review)
+                <h3 style="margin-top: 0;">Ulasan Anda</h3>
+                <div style="background: #f9fafb; padding: 1rem; border-radius: 8px;">
+                    <div style="color: #f59e0b; font-size: 1.5rem;">
+                        @for($i=1; $i<=5; $i++)
+                            {{ $i <= $order->review->rating ? '★' : '☆' }}
+                        @endfor
+                    </div>
+                    <p style="margin: 0.5rem 0 0; color: #4b5563;">"{{ $order->review->comment }}"</p>
+                </div>
+            @else
+                <h3 style="margin-top: 0;">Beri Ulasan</h3>
+                
+                @if(session('error'))
+                    <div style="color: red; margin-bottom: 1rem;">{{ session('error') }}</div>
+                @endif
+                @if(session('success'))
+                    <div style="color: green; margin-bottom: 1rem;">{{ session('success') }}</div>
+                @endif
+
+                <form action="{{ route('customer.reviews.store', $order) }}" method="POST">
+                    @csrf
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem;">Rating:</label>
+                        <select name="rating" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="5">★★★★★ (Sangat Puas)</option>
+                            <option value="4">★★★★ (Puas)</option>
+                            <option value="3">★★★ (Cukup)</option>
+                            <option value="2">★★ (Kurang)</option>
+                            <option value="1">★ (Kecewa)</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem;">Komentar:</label>
+                        <textarea name="comment" rows="3" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;" placeholder="Tulis pengalaman Anda..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="margin-top: 0; width: 100%;">Kirim Ulasan</button>
+                </form>
+            @endif
+        @endif
     </div>
 
     <a href="{{ route('customer.dashboard') }}" class="btn">Kembali ke Dashboard</a>

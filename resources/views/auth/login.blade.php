@@ -1,47 +1,106 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.simple')
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+@section('title', 'Login - LaundryKu')
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+@section('content')
+<div class="centered-layout">
+    <div class="container-sm">
+        <div class="card card-lg">
+            <div class="card-header">
+                <h1 class="card-title">🔐 Login</h1>
+                <p class="card-subtitle">Masuk ke akun Anda</p>
+            </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
+            <!-- Session Status -->
+            @if (session('status'))
+                <div class="alert alert-success">
+                    {{ session('status') }}
+                </div>
             @endif
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                <!-- Email Address -->
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input 
+                        type="email" 
+                        name="email" 
+                        id="email" 
+                        class="form-input" 
+                        value="{{ old('email') }}" 
+                        required 
+                        autofocus 
+                        autocomplete="username"
+                        placeholder="nama@email.com"
+                    >
+                    @error('email')
+                        <span style="color: var(--danger); font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        id="password" 
+                        class="form-input" 
+                        required 
+                        autocomplete="current-password"
+                        placeholder="Masukkan password"
+                    >
+                    @error('password')
+                        <span style="color: var(--danger); font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Remember Me -->
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input 
+                            type="checkbox" 
+                            name="remember" 
+                            id="remember_me"
+                            style="width: auto; margin-right: 0.5rem;"
+                        >
+                        <span style="font-size: 0.875rem; color: var(--text-secondary);">Ingat saya</span>
+                    </label>
+                </div>
+
+                <!-- Submit and Links -->
+                <div style="margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">
+                        Masuk
+                    </button>
+                </div>
+
+                <div style="margin-top: 1.5rem; text-align: center;">
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" style="color: var(--primary); text-decoration: none; font-size: 0.875rem;">
+                            Lupa password?
+                        </a>
+                    @endif
+                </div>
+
+                @if (Route::has('register'))
+                <div style="margin-top: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center;">
+                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Belum punya akun?</span>
+                    <a href="{{ route('register') }}" style="color: var(--primary); text-decoration: none; font-weight: 600; margin-left: 0.5rem;">
+                        Daftar Sekarang
+                    </a>
+                </div>
+                @endif
+            </form>
+
+            <div style="margin-top: 1.5rem; text-align: center;">
+                <a href="{{ url('/') }}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.875rem;">
+                    ← Kembali ke Home
+                </a>
+            </div>
         </div>
-    </form>
-</x-guest-layout>
+    </div>
+</div>
+@endsection

@@ -15,10 +15,28 @@ use Illuminate\Support\Facades\Log;
 class OrderController extends Controller
 {
     /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $orders = Order::where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+        return view('customer.orders.index', compact('orders'));
+    }
+
+    /**
      * Show the form for creating a new order.
      */
     public function create()
     {
+        // Check if user has phone number
+        if (empty(auth()->user()->phone)) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Silakan lengkapi nomor telepon Anda terlebih dahulu sebelum membuat pesanan.');
+        }
+        
         $services = Service::all();
         $bundles = Bundle::all();
         
@@ -30,16 +48,23 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        // Double check user has phone number
+        if (empty(auth()->user()->phone)) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Silakan lengkapi nomor telepon Anda terlebih dahulu sebelum membuat pesanan.');
+        }
+        
         $request->validate([
             'customer_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'address' => 'required|string',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
             'order_type' => 'required|in:service,bundle',
             'service_id' => 'required_if:order_type,service|nullable|exists:services,id',
             'bundle_id' => 'required_if:order_type,bundle|nullable|exists:bundles,id',
             'weight_kg' => 'required_if:order_type,service|nullable|numeric|min:1',
             'fabric_type' => 'nullable|string|max:100',
-            'payment_method' => 'required|string|in:cash,transfer',
             'pickup_date' => 'required|date|after_or_equal:today',
             'pickup_time' => 'required',
             'distance_km' => 'required|numeric|min:0',
@@ -112,15 +137,18 @@ class OrderController extends Controller
             $order = Order::create([
                 'order_code' => $orderCode,
                 'user_id' => auth()->id(),
+                'customer_user_id' => auth()->id(), // Same as user_id for online orders
+                'order_source' => 'online',
                 'service_id' => $serviceId,
                 'bundle_id' => $bundleId,
                 'promo_id' => $promoId,
                 'customer_name' => $request->customer_name,
                 'phone' => $request->phone,
                 'address' => $request->address,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude,
                 'fabric_type' => $request->fabric_type,
                 'weight_kg' => $request->weight_kg ?? 0,
-                'payment_method' => $request->payment_method,
                 'pickup_date' => $request->pickup_date,
                 'pickup_time' => $request->pickup_time,
                 'distance_km' => $request->distance_km,
@@ -129,7 +157,6 @@ class OrderController extends Controller
                 'discount' => $discount,
                 'total_price' => $totalPrice,
                 'status' => 'pending',
-                'description' => $request->notes, // Assuming notes maps to description or extra field, but spec didn't strictly require saving notes in a specific column, so I'll skip unless I add a column. Wait, spec said 'notes (opsional)' in input but not in table. I will ignore saving notes for now as it's not in the migration.
             ]);
 
             DB::commit();
@@ -140,7 +167,8 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Order creation failed: ' . $e->getMessage());
-            return back()->withInput()->withErrors(['error' => 'Failed to create order. Please try again.']);
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return back()->withInput()->withErrors(['error' => 'Gagal membuat pesanan. Silakan coba lagi atau hubungi admin.']);
         }
     }
 

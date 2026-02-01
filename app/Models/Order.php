@@ -12,15 +12,18 @@ class Order extends Model
     protected $fillable = [
         'order_code',
         'user_id',
+        'customer_user_id',
+        'order_source',
         'service_id',
         'bundle_id',
         'promo_id',
         'customer_name',
         'phone',
         'address',
+        'latitude',
+        'longitude',
         'fabric_type',
         'weight_kg',
-        'payment_method',
         'pickup_date',
         'pickup_time',
         'distance_km',
@@ -45,6 +48,11 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function customerUser()
+    {
+        return $this->belongsTo(User::class, 'customer_user_id');
     }
 
     public function service()

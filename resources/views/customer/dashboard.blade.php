@@ -175,7 +175,40 @@
 
 @section('content')
 <div class="dashboard-container">
-    <div class="dashboard-header">
+    <div class="dashboard-header" style="position: relative;">
+        <!-- Notification Bell -->
+        <div style="position: absolute; top: 2rem; right: 2rem;">
+            <x-dropdown align="right" width="60">
+                <x-slot name="trigger">
+                    <button class="relative inline-flex items-center p-2 border border-gray-200 rounded-full text-gray-500 bg-white hover:bg-gray-50 focus:outline-none transition ease-in-out duration-150 shadow-sm">
+                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        @if(auth()->user()->unreadNotifications->count() > 0)
+                            <span class="absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-600 ring-2 ring-white"></span>
+                        @endif
+                    </button>
+                </x-slot>
+
+                <x-slot name="content">
+                    <div class="px-4 py-2 border-b border-gray-100 font-semibold text-gray-700">
+                        Notifikasi
+                    </div>
+                    @forelse(auth()->user()->unreadNotifications as $notification)
+                        <x-dropdown-link :href="route('customer.orders.show', $notification->data['order_id'])" class="text-sm border-b border-gray-50">
+                            <div class="font-bold text-gray-800">{{ $notification->data['title'] }}</div>
+                            <div class="text-xs text-gray-500">{{ $notification->data['message'] }}</div>
+                            <div class="text-xs text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</div>
+                        </x-dropdown-link>
+                    @empty
+                        <div class="px-4 py-3 text-sm text-center text-gray-500">
+                            Tidak ada notifikasi baru
+                        </div>
+                    @endforelse
+                </x-slot>
+            </x-dropdown>
+        </div>
+
         <h1 class="welcome-text">Selamat Datang, {{ auth()->user()->name }}!</h1>
         <p class="subtitle-text">Kelola pesanan laundry Anda dengan mudah</p>
         <div class="points-badge">

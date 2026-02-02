@@ -167,6 +167,17 @@ class OrderController extends Controller
                 'status' => 'pending',
             ]);
 
+            // Create Order Tracking
+            \App\Models\OrderTracking::create([
+                'order_id' => $order->id,
+                'status' => 'pending',
+                'description' => 'Order created by customer',
+            ]);
+
+            // Notify Admins
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewOrderCreated($order));
+
             DB::commit();
 
             return redirect()->route('customer.orders.show', $order)
@@ -189,6 +200,10 @@ class OrderController extends Controller
         if ($order->user_id !== auth()->id()) {
             abort(403);
         }
+
+        // Mark relevant notifications as read
+        auth()->user()->unreadNotifications->where('data.order_id', $order->id)->markAsRead();
+
 
         return view('customer.orders.show', compact('order'));
     }

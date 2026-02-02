@@ -29,6 +29,11 @@ class OrderController extends Controller
     {
         $order->load(['user', 'service', 'bundle', 'promo', 'orderTrackings', 'review']);
         
+        // Mark relevant notifications as read
+        if (auth()->check()) {
+            auth()->user()->unreadNotifications->where('data.order_id', $order->id)->markAsRead();
+        }
+        
         return view('admin.orders.show', compact('order'));
     }
 
@@ -58,6 +63,19 @@ class OrderController extends Controller
                 'status' => $request->status,
                 'description' => 'Status updated to ' . ucfirst($request->status) . ' by Admin',
             ]);
+
+            // Trigger Notifications
+            if ($originalStatus !== 'finished' && $request->status === 'finished') {
+                if ($order->user) {
+                    $order->user->notify(new \App\Notifications\OrderFinished($order));
+                }
+            }
+
+            if ($originalStatus !== 'delivered' && $request->status === 'delivered') {
+                if ($order->order_source === 'online' && $order->user) {
+                    $order->user->notify(new \App\Notifications\OrderDelivered($order));
+                }
+            }
 
             // Point System Logic: Add points if status is 'finished' and was not previously 'finished'
             if ($request->status === 'finished' && $originalStatus !== 'finished') {

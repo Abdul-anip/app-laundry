@@ -350,6 +350,10 @@
                 <span class="menu-icon">👥</span>
                 Riwayat Customer
             </a>
+            <a href="{{ route('admin.settings.index') }}" class="menu-item">
+                <span class="menu-icon">⚙️</span>
+                Pengaturan
+            </a>
         </div>
     </div>
     

@@ -94,6 +94,23 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
     Route::get('admin/landing/footer', [\App\Http\Controllers\Admin\LandingPageController::class, 'editFooter'])->name('admin.landing.footer.edit');
     Route::put('admin/landing/footer', [\App\Http\Controllers\Admin\LandingPageController::class, 'updateFooter'])->name('admin.landing.footer.update');
+    
+    // Settings
+    Route::get('admin/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
+    Route::put('admin/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
+});
+
+/*
+|--------------------------------------------------------------------------
+| API Endpoint - Get Laundry Location
+|--------------------------------------------------------------------------
+*/
+Route::get('/api/laundry-location', function() {
+    $settings = \App\Models\LandingPageSetting::first();
+    return response()->json([
+        'latitude' => $settings->laundry_latitude ?? -0.1185067,
+        'longitude' => $settings->laundry_longitude ?? 100.566124,
+    ]);
 });
 
 /*

@@ -100,6 +100,14 @@ class OrderController extends Controller
             $discount = 0;
             $promoId = null;
             if ($request->promo_code) {
+                // Determine if promo exists but is invalid (inactive or expired) for error reporting
+                $checkPromo = Promo::where('code', $request->promo_code)->first();
+                if ($checkPromo) {
+                    if (!$checkPromo->is_active || ($checkPromo->expired_at && $checkPromo->expired_at->isPast())) {
+                        return back()->withInput()->withErrors(['promo_code' => 'code promo sudah habis']);
+                    }
+                }
+
                 $promo = Promo::where('code', $request->promo_code)
                     ->where('is_active', true)
                     ->where(function ($query) {

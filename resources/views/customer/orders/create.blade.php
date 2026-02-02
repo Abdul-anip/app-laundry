@@ -404,7 +404,7 @@
             <div class="grid-2">
                 <div class="form-group">
                     <label class="form-label" for="pickup_date">Tanggal Penjemputan</label>
-                    <input type="date" name="pickup_date" id="pickup_date" class="form-input" value="{{ old('pickup_date') }}" required>
+                    <input type="date" name="pickup_date" id="pickup_date" class="form-input" value="{{ old('pickup_date') }}" min="{{ date('Y-m-d') }}" required>
                 </div>
 
                 <div class="form-group">
@@ -413,10 +413,12 @@
                 </div>
             </div>
 
+
             <div class="form-group">
                 <label class="form-label" for="distance_km">Jarak Penjemputan (KM)</label>
-                <input type="number" name="distance_km" id="distance_km" step="0.1" min="0" class="form-input" value="{{ old('distance_km') }}" required>
-                <small class="form-hint">Gratis ongkir untuk jarak ≤ 2 KM. Lebih dari itu Rp 5.000/km</small>
+                <input type="number" name="distance_km" id="distance_km" step="0.1" min="0" class="form-input" value="{{ old('distance_km') }}" readonly style="background: #F3F4F6; cursor: not-allowed;" required>
+                <small class="form-hint">Jarak dihitung otomatis dari GPS (gratis untuk ≤ 2 KM, Rp 5.000/km untuk > 2 KM)</small>
+                <div id="pickup-fee-info" style="margin-top: 0.5rem; font-weight: 600;"></div>
             </div>
 
             <div class="form-group">
@@ -478,6 +480,9 @@
                 // Store coordinates
                 latField.value = lat;
                 lonField.value = lon;
+                
+                // Calculate distance from laundry
+                calculateDistance(lat, lon);
                 
                 // Reverse geocoding to get address
                 fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
@@ -564,6 +569,60 @@
                 maximumAge: 0
             }
         );
+    }
+
+    /**
+     * Calculate distance using Haversine formula
+     */
+    function calculateDistance(customerLat, customerLon) {
+        // Fetch laundry location from API
+        fetch('/api/laundry-location')
+            .then(response => response.json())
+            .then(data => {
+                const laundryLat = data.latitude;
+                const laundryLon = data.longitude;
+                
+                // Haversine formula
+                const R = 6371; // Radius of Earth in KM
+                const dLat = (customerLat - laundryLat) * Math.PI / 180;
+                const dLon = (customerLon - laundryLon) * Math.PI / 180;
+                
+                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                          Math.cos(laundryLat * Math.PI / 180) *
+                          Math.cos(customerLat * Math.PI / 180) *
+                          Math.sin(dLon/2) * Math.sin(dLon/2);
+                
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                const distance = R * c;
+                
+                // Update distance field
+                document.getElementById('distance_km').value = distance.toFixed(1);
+                
+                // Calculate and display pickup fee
+                updatePickupFee(distance.toFixed(1));
+            })
+            .catch(error => {
+                console.error('Error fetching laundry location:', error);
+                // Fallback: allow manual input
+                document.getElementById('distance_km').readOnly = false;
+                document.getElementById('distance_km').style.background = 'white';
+                document.getElementById('distance_km').style.cursor = 'text';
+            });
+    }
+
+    /**
+     * Update pickup fee display
+     */
+    function updatePickupFee(distance) {
+        const feeInfoDiv = document.getElementById('pickup-fee-info');
+        const dist = parseFloat(distance);
+        
+        if (dist <= 2) {
+            feeInfoDiv.innerHTML = `<span style="color: #10B981;">✅ GRATIS Ongkir (jarak ${distance} km)</span>`;
+        } else {
+            const fee = (dist - 2) * 5000;
+            feeInfoDiv.innerHTML = `<span style="color: #F59E0B;">💰 Ongkir: Rp ${fee.toLocaleString('id-ID')} (jarak ${distance} km)</span>`;
+        }
     }
 </script>
 @endsection

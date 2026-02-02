@@ -8,7 +8,6 @@
     
     /* Hero Section - Saweria Style */
     .hero {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         min-height: 100vh;
         display: flex;
         align-items: center;
@@ -304,7 +303,6 @@
     
     /* CTA Section - Saweria Style */
     .cta-section {
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
         padding: 6rem 2rem;
         text-align: center;
         position: relative;
@@ -333,13 +331,13 @@
         font-size: 3rem;
         font-weight: 700;
         margin: 0 0 1.5rem 0;
-        color: white;
+        color: black;
     }
     
     .cta-section p {
         font-size: 1.375rem;
         margin: 0 0 2.5rem 0;
-        color: rgba(255, 255, 255, 0.95);
+        color: rgba(0, 0, 0, 0.95);
         line-height: 1.6;
     }
     
@@ -500,7 +498,7 @@
 
 <!-- Services -->
 <section class="section section-alt">
-    <h2 class="section-title">💎 Layanan Kami</h2>
+    <h2 class="section-title">Layanan Kami</h2>
     <p class="section-subtitle">Pilih paket yang sesuai dengan kebutuhanmu</p>
     
     <div class="services-grid">
@@ -591,10 +589,6 @@
                 <li>📍 {{ $settings->contact_address }}</li>
             </ul>
         </div>
-    </div>
-    
-    <div class="footer-bottom">
-        <p style="margin: 0;">© {{ date('Y') }} LaundryKu. Made with ❤️ for Indonesia</p>
     </div>
 </footer>
 @endsection

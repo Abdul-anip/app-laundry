@@ -24,6 +24,9 @@ class LandingPageSetting extends Model
         'contact_email',
         'contact_phone',
         'contact_address',
+        'laundry_latitude',
+        'laundry_longitude',
+        'laundry_address',
     ];
 
     /**

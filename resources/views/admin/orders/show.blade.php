@@ -1,4 +1,4 @@
-@extends('layouts.simple')
+@extends('layouts.admin')
 
 @section('title', 'Detail Pesanan ' . $order->order_code . ' - Admin')
 

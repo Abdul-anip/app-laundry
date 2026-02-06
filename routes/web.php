@@ -25,7 +25,8 @@ Route::post('/tracking', [App\Http\Controllers\TrackingController::class, 'searc
 */
 Route::get('/dashboard', function () {
     if (auth()->user()->role === 'admin') {
-        return redirect()->route('admin.dashboard');
+        // return redirect()->route('admin.dashboard');
+        return redirect()->to('/admin');
     }
 
     return redirect()->route('customer.dashboard');
@@ -37,44 +38,49 @@ Route::get('/dashboard', function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    // Route::get('/admin/dashboard', function () {
+    //     return view('admin.dashboard');
+    // })->name('admin.dashboard');
 
-    Route::resource('admin/orders', \App\Http\Controllers\Admin\OrderController::class)
-        ->names('admin.orders')
-        ->only(['index', 'show', 'update']);
+    // OLD BLADE ROUTES - MIGRATED TO FILAMENT
+    // Route::resource('admin/orders', \App\Http\Controllers\Admin\OrderController::class)
+    //     ->names('admin.orders')
+    //     ->only(['index', 'show', 'update']);
     
-    Route::get('admin/orders/{order}/print', [\App\Http\Controllers\Admin\OrderController::class, 'printReceipt'])
-        ->name('admin.orders.print');
+    // Route::get('admin/orders/{order}/print', [\App\Http\Controllers\Admin\OrderController::class, 'printReceipt'])
+    //     ->name('admin.orders.print');
 
-    Route::resource('admin/promos', \App\Http\Controllers\Admin\PromoController::class)
-        ->names('admin.promos')
-        ->except(['show']);
+    // OLD BLADE ROUTES - MIGRATED TO FILAMENT
+    // Route::resource('admin/promos', \App\Http\Controllers\Admin\PromoController::class)
+    //     ->names('admin.promos')
+    //     ->except(['show']);
 
-    Route::resource('admin/reviews', \App\Http\Controllers\Admin\ReviewController::class)
-        ->names('admin.reviews')
-        ->only(['index']);
+    // OLD BLADE ROUTES - MIGRATED TO FILAMENT
+    // Route::resource('admin/reviews', \App\Http\Controllers\Admin\ReviewController::class)
+    //     ->names('admin.reviews')
+    //     ->only(['index']);
 
-    // Offline Orders
-    Route::get('admin/offline-orders/customers', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'getCustomers'])->name('admin.orders.get_customers');
-    Route::get('admin/offline-orders/create', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'create'])->name('admin.orders.create_offline');
-    Route::post('admin/offline-orders', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'store'])->name('admin.orders.store_offline');
+    // Offline Orders (Migrated to Filament POS Page)
+    // Route::get('admin/offline-orders/customers', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'getCustomers'])->name('admin.orders.get_customers');
+    // Route::get('admin/offline-orders/create', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'create'])->name('admin.orders.create_offline');
+    // Route::post('admin/offline-orders', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'store'])->name('admin.orders.store_offline');
 
+    // OLD BLADE ROUTES - MIGRATED TO FILAMENT
     // Reports
-    Route::get('admin/reports/daily', [\App\Http\Controllers\Admin\ReportController::class, 'daily'])->name('admin.reports.daily');
+    // Route::get('admin/reports/daily', [\App\Http\Controllers\Admin\ReportController::class, 'daily'])->name('admin.reports.daily');
 
+    // OLD BLADE ROUTES - MIGRATED TO FILAMENT
     // Customers
-    Route::get('admin/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('admin.customers.index');
+    // Route::get('admin/customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('admin.customers.index');
 
     // POS Mode
     Route::get('admin/pos', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'pos'])->name('admin.pos');
 
-    // Services & Bundles
-    Route::resource('admin/services', \App\Http\Controllers\Admin\ServiceController::class)
-        ->names('admin.services');
-    Route::resource('admin/bundles', \App\Http\Controllers\Admin\BundleController::class)
-        ->names('admin.bundles');
+    // OLD BLADE ROUTES - MIGRATED TO FILAMENT
+    // Route::resource('admin/services', \App\Http\Controllers\Admin\ServiceController::class)
+    //     ->names('admin.services');
+    // Route::resource('admin/bundles', \App\Http\Controllers\Admin\BundleController::class)
+    //     ->names('admin.bundles');
     
     // Landing Page Management - Per Section
     Route::get('admin/landing/hero', [\App\Http\Controllers\Admin\LandingPageController::class, 'editHero'])->name('admin.landing.hero.edit');
@@ -95,9 +101,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('admin/landing/footer', [\App\Http\Controllers\Admin\LandingPageController::class, 'editFooter'])->name('admin.landing.footer.edit');
     Route::put('admin/landing/footer', [\App\Http\Controllers\Admin\LandingPageController::class, 'updateFooter'])->name('admin.landing.footer.update');
     
+    // OLD BLADE ROUTES - MIGRATED TO FILAMENT
     // Settings
-    Route::get('admin/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
-    Route::put('admin/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
+    // Route::get('admin/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('admin.settings.index');
+    // Route::put('admin/settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('admin.settings.update');
 });
 
 /*

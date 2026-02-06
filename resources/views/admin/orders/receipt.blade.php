@@ -72,7 +72,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>LAUNDRY APP</h1>
+        <h1>VIP LAUNDRY</h1>
         <p>Terima kasih atas kepercayaan Anda</p>
     </div>
 

@@ -7,7 +7,7 @@
     <div class="container-sm">
         <div class="card card-lg">
             <div class="card-header">
-                <h1 class="card-title">🔐 Login</h1>
+                <h1 class="card-title">Login</h1>
                 <p class="card-subtitle">Masuk ke akun Anda</p>
             </div>
 

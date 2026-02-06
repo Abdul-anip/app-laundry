@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Detail - Laundry App</title>
+    <title>Order Detail - VIP Laundry</title>
     <style>
         body { font-family: sans-serif; max-width: 600px; margin: 3rem auto; padding: 0 1rem; text-align: center; }
         .success-icon { font-size: 4rem; color: #10b981; margin-bottom: 1rem; }

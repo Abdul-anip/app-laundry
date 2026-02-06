@@ -2,128 +2,99 @@
 
 @section('title', 'Register - LaundryKu')
 
-@section('content')
-<div class="centered-layout">
-    <div class="container-sm">
-        <div class="card card-lg">
-            <div class="card-header">
-                <h1 class="card-title">📝 Daftar Akun</h1>
-                <p class="card-subtitle">Buat akun baru untuk memesan laundry</p>
-            </div>
+@extends('layouts.simple')
 
-            <form method="POST" action="{{ route('register') }}">
+@section('title', 'Register - VIP Laundry')
+
+@section('content')
+    <div>
+        <h2 class="mt-6 text-3xl font-bold tracking-tight text-gray-900">Buat Akun Baru</h2>
+        <p class="mt-2 text-sm text-gray-600">
+            Daftar sekarang untuk mulai memesan layanan laundry.
+        </p>
+    </div>
+
+    <div class="mt-8">
+        <div class="mt-6">
+            <form action="{{ route('register') }}" method="POST" class="space-y-6">
                 @csrf
 
-                <!-- Name -->
-                <div class="form-group">
-                    <label class="form-label" for="name">Nama Lengkap</label>
-                    <input 
-                        type="text" 
-                        name="name" 
-                        id="name" 
-                        class="form-input" 
-                        value="{{ old('name') }}" 
-                        required 
-                        autofocus 
-                        autocomplete="name"
-                        placeholder="Masukkan nama lengkap"
-                    >
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                    <div class="mt-1">
+                        <input id="name" name="name" type="text" autocomplete="name" required value="{{ old('name') }}" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm">
+                    </div>
                     @error('name')
-                        <span style="color: var(--danger); font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <!-- Email Address -->
-                <div class="form-group">
-                    <label class="form-label" for="email">Email</label>
-                    <input 
-                        type="email" 
-                        name="email" 
-                        id="email" 
-                        class="form-input" 
-                        value="{{ old('email') }}" 
-                        required 
-                        autocomplete="username"
-                        placeholder="nama@email.com"
-                    >
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                    <div class="mt-1">
+                        <input id="email" name="email" type="email" autocomplete="email" required value="{{ old('email') }}" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm">
+                    </div>
                     @error('email')
-                        <span style="color: var(--danger); font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-
-                <!-- Phone Number -->
-                <div class="form-group">
-                    <label class="form-label" for="phone">Nomor Telepon / WhatsApp</label>
-                    <input 
-                        type="text" 
-                        name="phone" 
-                        id="phone" 
-                        class="form-input" 
-                        value="{{ old('phone') }}" 
-                        required 
-                        placeholder="Contoh: 08123456789"
-                    >
+                
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Nomor HP / WhatsApp</label>
+                    <div class="mt-1">
+                        <input id="phone" name="phone" type="text" required value="{{ old('phone') }}" class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm">
+                    </div>
                     @error('phone')
-                        <span style="color: var(--danger); font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <!-- Password -->
-                <div class="form-group">
-                    <label class="form-label" for="password">Password</label>
-                    <input 
-                        type="password" 
-                        name="password" 
-                        id="password" 
-                        class="form-input" 
-                        required 
-                        autocomplete="new-password"
-                        placeholder="Minimal 8 karakter"
-                    >
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <div class="mt-1">
+                        <input id="password" name="password" type="password" autocomplete="new-password" required class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm">
+                    </div>
                     @error('password')
-                        <span style="color: var(--danger); font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
-
-                <!-- Confirm Password -->
-                <div class="form-group">
-                    <label class="form-label" for="password_confirmation">Konfirmasi Password</label>
-                    <input 
-                        type="password" 
-                        name="password_confirmation" 
-                        id="password_confirmation" 
-                        class="form-input" 
-                        required 
-                        autocomplete="new-password"
-                        placeholder="Ketik ulang password"
-                    >
+                
+                <div>
+                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Konfirmasi Password</label>
+                    <div class="mt-1">
+                        <input id="password_confirmation" name="password_confirmation" type="password" autocomplete="new-password" required class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-primary-500 focus:outline-none focus:ring-primary-500 sm:text-sm">
+                    </div>
                     @error('password_confirmation')
-                        <span style="color: var(--danger); font-size: 0.875rem; margin-top: 0.25rem; display: block;">{{ $message }}</span>
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <!-- Submit -->
-                <div style="margin-top: 2rem;">
-                    <button type="submit" class="btn btn-success btn-lg btn-block">
+                <div>
+                    <button type="submit" class="flex w-full justify-center rounded-md border border-transparent bg-primary-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200">
                         Daftar Sekarang
                     </button>
                 </div>
-
-                <!-- Login Link -->
-                <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); text-align: center;">
-                    <span style="color: var(--text-secondary); font-size: 0.875rem;">Sudah punya akun?</span>
-                    <a href="{{ route('login') }}" style="color: var(--primary); text-decoration: none; font-weight: 600; margin-left: 0.5rem;">
-                        Login di sini
-                    </a>
-                </div>
             </form>
+        </div>
 
-            <div style="margin-top: 1.5rem; text-align: center;">
-                <a href="{{ url('/') }}" style="color: var(--text-secondary); text-decoration: none; font-size: 0.875rem;">
-                    ← Kembali ke Home
+        <div class="mt-6">
+             <div class="relative">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-300"></div>
+                </div>
+                <div class="relative flex justify-center text-sm">
+                    <span class="bg-white px-2 text-gray-500">Sudah punya akun?</span>
+                </div>
+            </div>
+             <div class="mt-6">
+                <a href="{{ route('login') }}" class="flex w-full justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-200">
+                    Masuk di sini
                 </a>
             </div>
         </div>
+        
+        <div class="mt-6 text-center">
+             <a href="{{ url('/') }}" class="text-sm text-gray-500 hover:text-gray-900">← Kembali ke Home</a>
+        </div>
     </div>
-</div>
 @endsection

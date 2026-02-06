@@ -1,101 +1,117 @@
-# 🧺 LaundryKu - Sistem Informasi Laundry
+# 🧺 VIP Laundry - Premium Laundry Management System
 
-Aplikasi web manajemen laundry berbasis Laravel yang memudahkan operasional bisnis laundry mulai dari manajemen pesanan, pelacakan status, hingga notifikasi otomatis ke pelanggan.
+Sistem Informasi Manajemen Laundry modern berbasis web yang dirancang untuk efisiensi operasional bisnis laundry. Dibangun menggunakan **Laravel 10** dan **Filament PHP**, aplikasi ini menawarkan pengalaman manajemen yang cepat, responsif, dan mudah digunakan.
 
-## ✨ Fitur Utama
-- **Manajemen Pesanan:** Buat, update, dan lacak status laundry (Pending, Process, Finished, Delivered).
-- **Auto-Detect Lokasi:** Hitung jarak otomatis menggunakan GPS untuk biaya antar-jemput.
-- **Notifikasi Real-time:** Customer & Admin mendapat notifikasi lonceng saat ada update status atau order baru.
-- **Role-Based Access:** Panel khusus untuk Admin dan Customer.
-- **Laporan & Statistik:** Dashboard informatif untuk memantau performa bisnis.
+![Dashboard Preview](https://filamentphp.com/images/home/screenshot-light.jpg) 
+*(Ganti dengan screenshot dashboard aplikasi Anda)*
 
-## 🛠️ Prasyarat (Requirements)
-Pastikan software berikut sudah terinstall di komputer Anda:
-- [PHP](https://www.php.net/) >= 8.2
-- [Composer](https://getcomposer.org/)
-- [Node.js](https://nodejs.org/) & NPM
-- [MySQL](https://www.mysql.com/) atau MariaDB
+## ✨ Fitur Unggulan
 
-## 🚀 Panduan Instalasi (Clone Project)
+### 🏢 Untuk Admin (Owner/Kasir)
+- **Dashboard Interaktif:** Pantau pendapatan bulanan, status order, dan grafik kinerja bisnis secara realtime.
+- **POS System (Point of Sale):**
+  - Input order cepat untuk layanan Kiloan & Satuan (Bundle).
+  - **Auto-Save Customer:** Input pelanggan manual otomatis tersimpan sebagai member baru.
+  - **Smart Location:** Deteksi lokasi & alamat otomatis untuk delivery.
+  - Cetak struk/nota instan.
+- **Manajemen Order:** Lacak status cucian (Queue, Process, Ready, Delivered) dengan mudah.
+- **Manajemen Pelanggan:** Database member terpusat dengan riwayat transaksi.
+- **Laporan Keuangan:** Rekap pendapatan harian/bulanan bisa diexport.
 
-Ikuti langkah-langkah berikut untuk menjalankan project ini di komputer Anda:
+### 📱 Untuk Pelanggan (Customer)
+- **Tracking Order:** Cek status cucian realtime via kode resi/order.
+- **Request Jemput:** Pesan layanan antar-jemput dari rumah.
+- **Loyalty Points:** Kumpulkan poin setiap transaksi.
 
-### 1. Clone Repository
-Buka terminal dan jalankan perintah berikut:
+---
+
+## 🛠️ Teknologi yang Digunakan
+- [Laravel 10](https://laravel.com) - Framework PHP Modern
+- [Filament PHP 3](https://filamentphp.com) - Admin Panel & Form Builder
+- [Livewire 3](https://livewire.laravel.com) - Full-stack Dynamic Interface
+- [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS Framework
+- [MySQL](https://mysql.com) - Database Management
+
+---
+
+## 🚀 Panduan Instalasi (Untuk Developer)
+
+### 1. Prasyarat Sistem
+Pastikan komputer Anda sudah terinstall:
+- PHP >= 8.1
+- Composer
+- Node.js & NPM
+- MySQL / MariaDB
+
+### 2. Clone & Setup Project
 ```bash
+# Clone repository
 git clone https://github.com/username/laundry-app.git
 cd laundry-app
-```
 
-### 2. Install Dependencies
-Install library PHP dan JavaScript yang dibutuhkan:
-```bash
+# Install PHP dependencies
 composer install
+
+# Install JS dependencies
 npm install
 ```
 
-### 3. Setup Environment (.env)
-Salin file konfigurasi contoh dan sesuaikan dengan database Anda:
+### 3. Konfigurasi Environment
 ```bash
+# Salin file env
 cp .env.example .env
-```
-Buka file `.env` dan atur konfigurasi database:
-```ini
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=nama_database_anda
-DB_USERNAME=root
-DB_PASSWORD=
-```
-*Pastikan Anda sudah membuat database kosong dengan nama yang sesuai di MySQL.*
 
-### 4. Generate App Key
-```bash
+# Generate Application Key
 php artisan key:generate
 ```
+*Buka file `.env` dan sesuaikan koneksi database Anda (DB_DATABASE, DB_USERNAME, dll).*
 
-### 5. Setup Database (Migrate & Seed)
-Jalankan migrasi untuk membuat tabel dan data dummy awal (termasuk akun Admin default):
+### 4. Database & Admin
 ```bash
+# Jalankan migrasi dan data dummy
 php artisan migrate --seed
+
+# (Opsional) Buat user Filament baru jika perlu
+php artisan make:filament-user
 ```
 
-### 6. Build Frontend Assets
-Compile file CSS dan JS (Tailwind & Alpine.js):
+### 5. Jalankan Aplikasi
 ```bash
+# Compile aset frontend
 npm run build
-```
 
-### 7. Jalankan Aplikasi
-Jalankan server lokal Laravel:
-```bash
+# Jalankan server
 php artisan serve
 ```
-Akses aplikasi di: `http://localhost:8000`
+Akses Admin Panel di: `http://localhost:8000/admin`
 
 ---
 
-## 👤 Akun Default (Login)
-Gunakan akun berikut untuk masuk:
+## 👤 Akun Demo Default
 
-| Role | Email | Password |
-|------|-------|----------|
-| **Admin** | `admin@laundry.com` | `password` |
-| **Customer** | `customer@laundry.com` | `password` |
-
-## 📦 Update & Maintenance
-Jika Anda menarik update terbaru dari repository (`git pull`), jangan lupa jalankan:
-```bash
-composer install
-npm install
-npm run build
-php artisan migrate
-```
-
-## 📝 Catatan Penting
-- **Notifikasi Email:** Untuk testing di lokal, ubah `MAIL_MAILER=log` di `.env` agar email masuk ke `storage/logs/laravel.log` alih-alih dikirim sungguhan.
-- **GPS:** Fitur lokasi membutuhkan browser permission untuk mengakses Geolocation.
+| Role | Email | Password | Akses |
+|------|-------|----------|-------|
+| **Super Admin** | `admin@laundry.com` | `password` | `/admin` |
+| **Customer** | `customer@laundry.com` | `password` | `/` (Halaman Depan) |
 
 ---
-Dibuat dengan ❤️ menggunakan Laravel & Tailwind CSS.
+
+## � Panduan Penggunaan Singkat
+
+### Menggunakan POS System
+1. Login ke panel Admin (`/admin`).
+2. Pilih menu **POS System** di sidebar.
+3. Pilih Jenis Pelanggan:
+   - **Registered:** Cari nama member yang sudah ada.
+   - **Walk-in:** Ketik nama & nomor HP (otomatis dibuatkan akun member).
+4. Pilih Layanan (Kiloan/Satuan) & Masukkan Berat/Jumlah.
+5. Klik **"Get Current Location"** untuk isi alamat otomatis (jika delivery).
+6. Proses pembayaran & Cetak Struk.
+
+---
+
+## 📝 Catatan Tambahan
+- **Geolocation:** Fitur "Get Location" membutuhkan izin akses lokasi pada browser dan koneksi internet (untuk OpenStreetMap).
+- **Mode Produksi:** Untuk deploy ke hosting, pastikan menjalankan `php artisan filament:optimize` agar performa lebih cepat.
+
+Dibuat dengan ❤️ untuk kemudahan bisnis laundry Anda.

@@ -45,7 +45,14 @@ class ReviewResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(function (string $state): string {
+                        $parts = explode(' ', $state);
+                        $maskedParts = array_map(function ($part) {
+                            return substr($part, 0, 1) . str_repeat('*', max(0, strlen($part) - 1));
+                        }, $parts);
+                        return implode(' ', $maskedParts);
+                    }),
                     
                 Tables\Columns\TextColumn::make('order.order_code')
                     ->label('Order Code')

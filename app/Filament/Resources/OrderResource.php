@@ -127,6 +127,51 @@ class OrderResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
+                Tables\Actions\Action::make('advance_status')
+                    ->label(fn (Order $record) => match ($record->status) {
+                        'pending' => 'Start Pickup',
+                        'pickup' => 'Start Process',
+                        'process' => 'Finish Order',
+                        'finished' => 'Deliver Order',
+                        default => 'Next Step',
+                    })
+                    ->icon('heroicon-o-arrow-right-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Update Order Status')
+                    ->modalDescription(fn (Order $record) => match ($record->status) {
+                        'pending' => 'Are you sure you want to start the pickup process for this order?',
+                        'pickup' => 'Are you sure you want to start processing (washing) this order?',
+                        'process' => 'Are you sure this order is finished and ready/packed?',
+                        'finished' => 'Are you sure you want to deliver this order back to the customer?',
+                        default => 'Are you sure you want to advance the status?',
+                    })
+                    ->action(function (Order $record) {
+                        $nextStatus = match ($record->status) {
+                            'pending' => 'pickup',
+                            'pickup' => 'process',
+                            'process' => 'finished',
+                            'finished' => 'delivered',
+                            default => null,
+                        };
+
+                        if ($nextStatus) {
+                            $record->update(['status' => $nextStatus]);
+                            
+                            // Create tracking
+                            \App\Models\OrderTracking::create([
+                                'order_id' => $record->id,
+                                'status' => $nextStatus,
+                                'description' => 'Status updated to ' . ucfirst($nextStatus),
+                            ]);
+                            
+                            \Filament\Notifications\Notification::make()
+                                ->title('Status Updated')
+                                ->success()
+                                ->send();
+                        }
+                    })
+                    ->visible(fn (Order $record) => in_array($record->status, ['pending', 'pickup', 'process', 'finished'])),
             ])
             ->bulkActions([
                 // No bulk actions for orders

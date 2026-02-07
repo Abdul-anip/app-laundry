@@ -163,74 +163,77 @@ class ViewOrder extends ViewRecord
                 ->openUrlInNewTab()
                 ->visible(fn (Order $record): bool => $record->latitude && $record->longitude),
             
-            // Update Status Action
-            Actions\Action::make('updateStatus')
-                ->label('Update Status')
-                ->icon('heroicon-o-arrow-path')
-                ->color('warning')
-                ->form([
-                    Forms\Components\ToggleButtons::make('status')
-                        ->label('New Status')
-                        ->options([
-                            'pending' => 'Pending',
-                            'pickup' => 'Pickup',
-                            'process' => 'Process',
-                            'finished' => 'Finished',
-                            'delivered' => 'Delivered',
-                        ])
-                        ->colors([
-                            'pending' => 'warning',
-                            'pickup' => 'info',
-                            'process' => 'primary',
-                            'finished' => 'success',
-                            'delivered' => 'gray',
-                        ])
-                        ->icons([
-                            'pending' => 'heroicon-o-clock',
-                            'pickup' => 'heroicon-o-truck',
-                            'process' => 'heroicon-o-arrow-path',
-                            'finished' => 'heroicon-o-check-circle',
-                            'delivered' => 'heroicon-o-home',
-                        ])
-                        ->inline()
-                        ->required()
-                        ->default($this->record->status),
-                ])
-                ->action(function (array $data) {
+            // Advance Status Action
+            Actions\Action::make('advanceStatus')
+                ->label(fn () => match ($this->record->status) {
+                    'pending' => 'Start Pickup',
+                    'pickup' => 'Start Process',
+                    'process' => 'Finish Order',
+                    'finished' => 'Deliver Order',
+                    default => 'Completed',
+                })
+                ->icon('heroicon-o-arrow-right-circle')
+                ->color('success')
+                ->requiresConfirmation()
+                ->modalHeading('Update Order Status')
+                ->modalDescription(fn () => match ($this->record->status) {
+                    'pending' => 'Are you sure you want to start the pickup process for this order?',
+                    'pickup' => 'Are you sure you want to start processing (washing) this order?',
+                    'process' => 'Are you sure this order is finished and ready/packed?',
+                    'finished' => 'Are you sure you want to deliver this order back to the customer?',
+                    default => 'Are you sure you want to advance the status?',
+                })
+                ->action(function () {
                     try {
                         DB::beginTransaction();
 
                         $order = $this->record;
                         $originalStatus = $order->status;
+                        
+                        $nextStatus = match ($originalStatus) {
+                            'pending' => 'pickup',
+                            'pickup' => 'process',
+                            'process' => 'finished',
+                            'finished' => 'delivered',
+                            default => null,
+                        };
+
+                        if (!$nextStatus) {
+                            Notification::make()
+                                ->title('No next status available')
+                                ->warning()
+                                ->send();
+                            return;
+                        }
 
                         // Update Order Status
                         $order->update([
-                            'status' => $data['status'],
-                            'payment_status' => $data['status'] === 'delivered' ? 'paid' : $order->payment_status,
+                            'status' => $nextStatus,
+                            'payment_status' => $nextStatus === 'delivered' ? 'paid' : $order->payment_status,
                         ]);
 
                         // Create Order Tracking
                         OrderTracking::create([
                             'order_id' => $order->id,
-                            'status' => $data['status'],
-                            'description' => 'Status updated to ' . ucfirst($data['status']) . ' by Admin',
+                            'status' => $nextStatus,
+                            'description' => 'Status updated to ' . ucfirst($nextStatus) . ' by Admin',
                         ]);
 
                         // Trigger Notifications
-                        if ($originalStatus !== 'finished' && $data['status'] === 'finished') {
+                        if ($originalStatus !== 'finished' && $nextStatus === 'finished') {
                             if ($order->user) {
                                 $order->user->notify(new OrderFinished($order));
                             }
                         }
 
-                        if ($originalStatus !== 'delivered' && $data['status'] === 'delivered') {
+                        if ($originalStatus !== 'delivered' && $nextStatus === 'delivered') {
                             if ($order->order_source === 'online' && $order->user) {
                                 $order->user->notify(new OrderDelivered($order));
                             }
                         }
 
                         // Point System Logic: Add points if status is 'finished' and was not previously 'finished'
-                        if ($data['status'] === 'finished' && $originalStatus !== 'finished') {
+                        if ($nextStatus === 'finished' && $originalStatus !== 'finished') {
                             $points = floor($order->weight_kg);
                             // Ensure we have a user and points > 0
                             if ($points > 0 && $order->user) {
@@ -262,7 +265,8 @@ class ViewOrder extends ViewRecord
                             ->danger()
                             ->send();
                     }
-                }),
+                })
+                ->visible(fn () => in_array($this->record->status, ['pending', 'pickup', 'process', 'finished'])),
 
             Actions\Action::make('printReceipt')
                 ->label('Print Receipt')

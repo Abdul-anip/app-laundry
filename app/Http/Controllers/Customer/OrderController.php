@@ -65,8 +65,6 @@ class OrderController extends Controller
             'bundle_id' => 'required_if:order_type,bundle|nullable|exists:bundles,id',
             'weight_kg' => 'required_if:order_type,service|nullable|numeric|min:1',
             'fabric_type' => 'nullable|string|max:100',
-            'pickup_date' => 'required|date|after_or_equal:today',
-            'pickup_time' => 'required',
             'distance_km' => 'required|numeric|min:0',
             'promo_code' => 'nullable|string|exists:promos,code',
         ]);
@@ -157,8 +155,8 @@ class OrderController extends Controller
                 'longitude' => $request->longitude,
                 'fabric_type' => $request->fabric_type,
                 'weight_kg' => $request->weight_kg ?? 0,
-                'pickup_date' => $request->pickup_date,
-                'pickup_time' => $request->pickup_time,
+                'pickup_date' => null,
+                'pickup_time' => null,
                 'distance_km' => $request->distance_km,
                 'pickup_fee' => $pickupFee,
                 'subtotal' => $subtotal,
@@ -221,5 +219,19 @@ class OrderController extends Controller
 
 
         return view('customer.orders.show', compact('order'));
+    }
+
+    /**
+     * Download order proof as PDF
+     */
+    public function downloadProof(Order $order)
+    {
+        // Ensure user owns the order
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('customer.orders.pdf', compact('order'));
+        return $pdf->download('invoice-' . $order->order_code . '.pdf');
     }
 }

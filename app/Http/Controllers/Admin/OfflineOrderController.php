@@ -240,8 +240,9 @@ class OfflineOrderController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.orders.show', $order)
-                ->with('success', 'Offline Order created successfully!');
+            return redirect()->route('admin.pos')
+                ->with('success', 'Offline Order created successfully!')
+                ->with('print_order_id', $order->id);
 
         } catch (\Exception $e) {
             DB::rollBack();

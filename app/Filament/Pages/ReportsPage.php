@@ -11,6 +11,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
+use Filament\Actions;
+use Filament\Notifications\Notification;
 
 class ReportsPage extends Page implements HasTable
 {
@@ -111,6 +113,45 @@ class ReportsPage extends Page implements HasTable
             'total_weight' => $orders->sum('weight_kg'),
             'online_orders' => $orders->where('order_source', 'online')->count(),
             'offline_orders' => $orders->where('order_source', 'offline')->count(),
+        ];
+    }
+    public function getHeaderActions(): array
+    {
+        return [
+            Actions\Action::make('downloadPdf')
+                ->label('Download PDF')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->color('primary')
+                ->action(function () {
+                    $date = $this->date ? Carbon::parse($this->date) : now();
+                    $orders = Order::whereDate('created_at', $date)->get();
+                    
+                    if ($orders->isEmpty()) {
+                        Notification::make()
+                            ->title('No data to download')
+                            ->warning()
+                            ->send();
+                        return;
+                    }
+
+                    $stats = [
+                        'total_orders' => $orders->count(),
+                        'total_revenue' => $orders->sum('total_price'),
+                        'total_weight' => $orders->sum('weight_kg'),
+                        'online_orders' => $orders->where('order_source', 'online')->count(),
+                        'offline_orders' => $orders->where('order_source', 'offline')->count(),
+                    ];
+
+                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.reports.daily_pdf', [
+                        'orders' => $orders,
+                        'stats' => $stats,
+                        'date' => $date->format('Y-m-d'),
+                    ]);
+
+                    return response()->streamDownload(function () use ($pdf) {
+                        echo $pdf->output();
+                    }, 'daily-report-' . $date->format('Y-m-d') . '.pdf');
+                }),
         ];
     }
 }

@@ -75,23 +75,23 @@
                     ✨ Premium Laundry Service
                 </div>
                 <h1 class="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight">
-                    {{ $settings->hero_title ?? 'Your Laundry, Our Priority' }}
+                    Your Laundry, Our Priority
                 </h1>
                 <p class="text-xl md:text-2xl mb-8 text-blue-100 leading-relaxed">
-                    {{ $settings->hero_subtitle ?? 'Fast, clean, and fragrant laundry service delivered to your doorstep' }}
+                    Fast, clean, and fragrant laundry service delivered to your doorstep
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a href="{{ route('customer.orders.create') }}" class="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transition-all transform hover:scale-105">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
                         </svg>
-                        {{ $settings->hero_cta_primary ?? 'Order Now' }}
+                        Order Now
                     </a>
                     <a href="{{ route('tracking.index') }}" class="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/20 transition-all">
                         <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
                         </svg>
-                        {{ $settings->hero_cta_secondary ?? 'Track Order' }}
+                        Track Order
                     </a>
                 </div>
             </div>
@@ -137,10 +137,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-                {{ $settings->how_it_works_title ?? 'How It Works' }}
+                How It Works
             </h2>
             <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                {{ $settings->how_it_works_subtitle ?? 'Simple, fast, and hassle-free laundry service in 3 easy steps' }}
+                Simple, fast, and hassle-free laundry service in 3 easy steps
             </p>
         </div>
         
@@ -229,10 +229,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
             <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-4">
-                {{ $settings->why_choose_title ?? 'Why Choose Us' }}
+                Why Choose Us
             </h2>
             <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                {{ $settings->why_choose_subtitle ?? 'We provide the best laundry experience' }}
+                We provide the best laundry experience
             </p>
         </div>
         
@@ -268,16 +268,16 @@
 <section class="section bg-gradient-to-r from-blue-600 to-purple-600 text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-4xl md:text-5xl font-black mb-6">
-            {{ $settings->cta_section_title ?? 'Ready to Experience Premium Laundry?' }}
+            Ready to Experience Premium Laundry?
         </h2>
         <p class="text-xl mb-8 text-blue-100">
-            {{ $settings->cta_section_text ?? 'Join thousands of satisfied customers today' }}
+            Join thousands of satisfied customers today
         </p>
         <a href="{{ route('customer.orders.create') }}" class="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transition-all transform hover:scale-105">
             <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
             </svg>
-            {{ $settings->cta_button_text ?? 'Start Now' }}
+            Start Now
         </a>
     </div>
 </section>

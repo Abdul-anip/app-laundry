@@ -55,6 +55,13 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->navigationItems([
+                \Filament\Navigation\NavigationItem::make('POS System')
+                    ->url(fn () => route('admin.pos'), shouldOpenInNewTab: false)
+                    ->icon('heroicon-o-computer-desktop')
+                    ->group('Operations')
+                    ->sort(2),
+            ])
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s');
     }

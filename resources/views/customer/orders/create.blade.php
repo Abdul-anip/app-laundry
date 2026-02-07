@@ -157,22 +157,17 @@
             <label for="notes" class="block mb-2 text-sm font-medium text-gray-900">Catatan Tambahan (Opsional)</label>
             <textarea id="notes" name="notes" rows="2" class="block p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500" placeholder="Tuliskan catatan khusus untuk pesanan Anda">{{ old('notes') }}</textarea>
         </div>
+        
+        <div>
+            <label for="promo_code" class="block mb-2 text-sm font-medium text-gray-900">Kode Promo (Opsional)</label>
+            <input type="text" id="promo_code" name="promo_code" value="{{ old('promo_code') }}" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" placeholder="Masukkan kode promo">
+        </div>
     </div>
 
     <!-- Pickup & Payment -->
     <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
-        <h2 class="mb-4 text-lg font-semibold text-gray-900">Detail Penjemputan & Pembayaran</h2>
+        <h2 class="mb-4 text-lg font-semibold text-gray-900">Detail Penjemputan</h2>
         
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-4">
-            <div>
-                <label for="pickup_date" class="block mb-2 text-sm font-medium text-gray-900">Tanggal Penjemputan</label>
-                <input type="date" id="pickup_date" name="pickup_date" value="{{ old('pickup_date') }}" min="{{ date('Y-m-d') }}" required class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-            </div>
-            <div>
-                <label for="pickup_time" class="block mb-2 text-sm font-medium text-gray-900">Waktu Penjemputan</label>
-                <input type="time" id="pickup_time" name="pickup_time" value="{{ old('pickup_time') }}" required class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
-            </div>
-        </div>
 
         <div class="mb-4">
             <label for="distance_km" class="block mb-2 text-sm font-medium text-gray-900">Jarak Penjemputan (KM)</label>
@@ -181,10 +176,6 @@
             <div id="pickup-fee-info" class="mt-2 text-sm font-semibold"></div>
         </div>
 
-        <div>
-            <label for="promo_code" class="block mb-2 text-sm font-medium text-gray-900">Kode Promo (Opsional)</label>
-            <input type="text" id="promo_code" name="promo_code" value="{{ old('promo_code') }}" class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5" placeholder="Masukkan kode promo">
-        </div>
     </div>
 
     <!-- Submit Buttons -->

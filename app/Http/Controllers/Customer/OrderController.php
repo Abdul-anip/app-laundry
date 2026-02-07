@@ -175,8 +175,23 @@ class OrderController extends Controller
             ]);
 
             // Notify Admins
+            // Notify Admins
             $admins = \App\Models\User::where('role', 'admin')->get();
-            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewOrderCreated($order));
+            
+            foreach ($admins as $admin) {
+                \Filament\Notifications\Notification::make()
+                    ->title('Pesanan Baru Masuk! 🆕')
+                    ->body("Pesanan {$order->order_code} dari {$order->customer_name} perlu diproses.")
+                    ->icon('heroicon-o-shopping-bag')
+                    ->info()
+                    ->actions([
+                        \Filament\Notifications\Actions\Action::make('view')
+                            ->button()
+                            ->url(route('filament.admin.resources.orders.view', $order), shouldOpenInNewTab: true)
+                            ->markAsRead(),
+                    ])
+                    ->sendToDatabase($admin);
+            }
 
             DB::commit();
 

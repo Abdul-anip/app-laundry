@@ -56,9 +56,11 @@ class NewOrderCreated extends Notification
             'order_id' => $this->order->id,
             'order_code' => $this->order->order_code,
             'customer_name' => $this->order->customer_name,
-            'title' => 'Pesanan Baru 🆕',
-            'message' => 'Pesanan ' . $this->order->order_code . ' dari ' . $this->order->customer_name . ' perlu diproses.',
-            'type' => 'new_order'
+            'title' => 'Pesanan Baru Masuk! 🆕',
+            'body' => "Pesanan {$this->order->order_code} dari {$this->order->customer_name} perlu diproses.",
+            'icon' => 'heroicon-o-shopping-bag',
+            'status' => 'info',
+            'url' => route('filament.admin.resources.orders.view', $this->order),
         ];
     }
 }

@@ -1,594 +1,284 @@
-@extends('layouts.simple')
+@extends('layouts.landing')
 
-@section('title', 'LaundryKu - Layanan Laundry Online Terpercaya')
+@section('title', 'VIP Laundry - Your Premium Laundry Service')
 
 @push('styles')
 <style>
-    body { margin: 0; padding: 0; }
-    
-    /* Hero Section - Saweria Style */
-    .hero {
+    /* Hero Section */
+    .hero-section {
         min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         position: relative;
         overflow: hidden;
+        display: flex;
+        align-items: center;
+        padding-top: 4rem;
     }
     
-    /* Subtle pattern overlay */
-    .hero::before {
+    .hero-section::before {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
-        opacity: 0.5;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.5;
     }
     
-    .hero-card {
-        background: white;
-        border-radius: 24px;
-        padding: 3.5rem 3rem;
-        max-width: 580px;
-        width: 100%;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    .hero-content {
         position: relative;
-        z-index: 1;
-        animation: fadeInUp 0.6s ease;
+        z-index: 10;
     }
     
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .scroll-indicator {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        animation: bounce 2s infinite;
     }
     
-    .hero-icon {
-        font-size: 5rem;
-        text-align: center;
-        margin-bottom: 1.5rem;
-        line-height: 1;
+    @keyframes bounce {
+        0%, 100% { transform: translate(-50%, 0); }
+        50% { transform: translate(-50%, -10px); }
     }
     
-    .hero-title {
-        font-size: 2.75rem;
-        font-weight: 700;
-        text-align: center;
-        margin: 0 0 1rem 0;
-        color: #1F2937;
-        line-height: 1.2;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.25rem;
-        text-align: center;
-        color: #6B7280;
-        margin: 0 0 2.5rem 0;
-        line-height: 1.6;
-    }
-    
-    .hero-cta {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    .btn-hero {
-        padding: 1.125rem 2rem;
-        font-size: 1.125rem;
-        font-weight: 600;
-        border-radius: 16px;
-        text-decoration: none;
-        text-align: center;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        display: block;
-    }
-    
-    .btn-hero-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-    }
-    
-    .btn-hero-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-    }
-    
-    .btn-hero-secondary {
-        background: white;
-        color: #667eea;
-        border: 2px solid #E5E7EB;
-    }
-    
-    .btn-hero-secondary:hover {
-        border-color: #667eea;
-        background: #F9FAFB;
-    }
-    
-    /* Section Styles */
+    /* Sections */
     .section {
-        padding: 6rem 2rem;
-        background: white;
+        padding: 6rem 1rem;
     }
     
     .section-alt {
-        background: linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%);
+        background: linear-gradient(180deg, #f9fafb 0%, #ffffff 100%);
     }
     
-    .section-title {
-        text-align: center;
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin: 0 0 1rem 0;
-        color: #1F2937;
-    }
-    
-    .section-subtitle {
-        text-align: center;
-        font-size: 1.25rem;
-        color: #6B7280;
-        margin: 0 0 4rem 0;
-        max-width: 600px;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    
-    /* Steps - Saweria Style */
-    .steps {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2.5rem;
-        max-width: 1100px;
-        margin: 0 auto;
-    }
-    
-    .step-card {
-        background: white;
-        padding: 3rem 2.5rem;
-        border-radius: 20px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        text-align: center;
+    /* Cards */
+    .feature-card {
         transition: all 0.3s ease;
-        border: 1px solid #F3F4F6;
     }
     
-    .step-card:hover {
+    .feature-card:hover {
         transform: translateY(-8px);
-        box-shadow: 0 12px 32px rgba(102, 126, 234, 0.15);
-    }
-    
-    .step-icon {
-        font-size: 4.5rem;
-        margin-bottom: 1.5rem;
-        line-height: 1;
-    }
-    
-    .step-number {
-        display: inline-block;
-        width: 3rem;
-        height: 3rem;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border-radius: 50%;
-        font-weight: 700;
-        line-height: 3rem;
-        margin-bottom: 1.5rem;
-        font-size: 1.25rem;
-    }
-    
-    .step-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin: 0 0 1rem 0;
-        color: #1F2937;
-    }
-    
-    .step-desc {
-        color: #6B7280;
-        margin: 0;
-        line-height: 1.7;
-        font-size: 1rem;
-    }
-    
-    /* Services - Saweria Style */
-    .services-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 2.5rem;
-        max-width: 1100px;
-        margin: 0 auto;
-    }
-    
-    .service-card {
-        background: white;
-        padding: 2.5rem;
-        border-radius: 20px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .service-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        transform: scaleX(0);
-        transition: transform 0.3s ease;
-    }
-    
-    .service-card:hover::before {
-        transform: scaleX(1);
-    }
-    
-    .service-card:hover {
-        border-color: #667eea;
-        box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
-        transform: translateY(-4px);
-    }
-    
-    .service-name {
-        font-size: 1.75rem;
-        font-weight: 700;
-        margin: 0 0 1rem 0;
-        color: #1F2937;
-    }
-    
-    .service-price {
-        font-size: 2.5rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin: 0 0 1.5rem 0;
-    }
-    
-    .service-desc {
-        color: #6B7280;
-        margin: 0 0 2rem 0;
-        line-height: 1.7;
-        min-height: 3rem;
-    }
-    
-    /* Features */
-    .features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 2.5rem;
-        max-width: 1100px;
-        margin: 0 auto;
-    }
-    
-    .feature {
-        text-align: center;
-        padding: 2rem 1.5rem;
-    }
-    
-    .feature-icon {
-        font-size: 4rem;
-        margin-bottom: 1.5rem;
-        line-height: 1;
-    }
-    
-    .feature-title {
-        font-size: 1.375rem;
-        font-weight: 700;
-        margin: 0 0 0.75rem 0;
-        color: #1F2937;
-    }
-    
-    .feature-desc {
-        color: #6B7280;
-        margin: 0;
-        line-height: 1.7;
-    }
-    
-    /* CTA Section - Saweria Style */
-    .cta-section {
-        padding: 6rem 2rem;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .cta-section::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url('data:image/svg+xml,<svg width="60" height="60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="30" r="1.5" fill="rgba(255,255,255,0.1)"/></svg>');
-        opacity: 0.5;
-    }
-    
-    .cta-content {
-        position: relative;
-        z-index: 1;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-    
-    .cta-section h2 {
-        font-size: 3rem;
-        font-weight: 700;
-        margin: 0 0 1.5rem 0;
-        color: black;
-    }
-    
-    .cta-section p {
-        font-size: 1.375rem;
-        margin: 0 0 2.5rem 0;
-        color: rgba(0, 0, 0, 0.95);
-        line-height: 1.6;
-    }
-    
-    .btn-cta {
-        padding: 1.25rem 3rem;
-        font-size: 1.25rem;
-        font-weight: 600;
-        border-radius: 16px;
-        background: white;
-        color: #059669;
-        text-decoration: none;
-        display: inline-block;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        transition: all 0.3s ease;
-    }
-    
-    .btn-cta:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
-    }
-    
-    /* Footer - Minimal Saweria Style */
-    .footer {
-        background: #111827;
-        color: rgba(255, 255, 255, 0.8);
-        padding: 4rem 2rem 2rem;
-    }
-    
-    .footer-content {
-        max-width: 1100px;
-        margin: 0 auto;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 3rem;
-        margin-bottom: 3rem;
-    }
-    
-    .footer-section h3 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin: 0 0 1.5rem 0;
-        color: white;
-    }
-    
-    .footer-links {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    
-    .footer-links li {
-        margin-bottom: 0.75rem;
-    }
-    
-    .footer-links a {
-        color: rgba(255, 255, 255, 0.7);
-        text-decoration: none;
-        transition: color 0.2s;
-        font-size: 1rem;
-    }
-    
-    .footer-links a:hover {
-        color: white;
-    }
-    
-    .footer-bottom {
-        text-align: center;
-        padding-top: 2.5rem;
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.5);
-        font-size: 0.95rem;
-    }
-    
-    /* Button Style Override */
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        border-radius: 14px;
-        padding: 1rem 2rem;
-        font-weight: 600;
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-    }
-    
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
-    }
-    
-    @media (max-width: 768px) {
-        .hero-card {
-            padding: 2.5rem 2rem;
-        }
-        .hero-title {
-            font-size: 2.25rem;
-        }
-        .hero-subtitle {
-            font-size: 1.125rem;
-        }
-        .section-title {
-            font-size: 2rem;
-        }
-        .section {
-            padding: 4rem 1.5rem;
-        }
-        .cta-section h2 {
-            font-size: 2.25rem;
-        }
     }
 </style>
 @endpush
 
 @section('content')
-<!-- Hero Section - Saweria Style -->
-<section class="hero">
-    <div class="hero-card">
-        <h1 class="hero-title">{{ $settings->hero_title }}</h1>
-        <p class="hero-subtitle">{{ $settings->hero_subtitle }}</p>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Left - Text Content -->
+            <div class="hero-content text-white">
+                <div class="inline-block mb-4 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-medium">
+                    ✨ Premium Laundry Service
+                </div>
+                <h1 class="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight">
+                    {{ $settings->hero_title ?? 'Your Laundry, Our Priority' }}
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-blue-100 leading-relaxed">
+                    {{ $settings->hero_subtitle ?? 'Fast, clean, and fragrant laundry service delivered to your doorstep' }}
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="{{ route('customer.orders.create') }}" class="inline-flex items-center justify-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transition-all transform hover:scale-105">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                        </svg>
+                        {{ $settings->hero_cta_primary ?? 'Order Now' }}
+                    </a>
+                    <a href="{{ route('tracking.index') }}" class="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 px-8 py-4 rounded-xl font-bold text-lg hover:bg-white/20 transition-all">
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                        </svg>
+                        {{ $settings->hero_cta_secondary ?? 'Track Order' }}
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Right - Illustration/Stats -->
+            <div class="hidden lg:block">
+                <div class="relative">
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-4xl font-black text-white mb-2">500+</div>
+                            <div class="text-blue-100">Happy Customers</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-4xl font-black text-white mb-2">1000+</div>
+                            <div class="text-blue-100">Orders Completed</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-4xl font-black text-white mb-2">24/7</div>
+                            <div class="text-blue-100">Service Available</div>
+                        </div>
+                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                            <div class="text-4xl font-black text-white mb-2">⭐ 4.9</div>
+                            <div class="text-blue-100">Average Rating</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator text-white text-center">
+        <div class="text-sm mb-2">Scroll to explore</div>
+        <svg class="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section id="how-it-works" class="section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+                {{ $settings->how_it_works_title ?? 'How It Works' }}
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                {{ $settings->how_it_works_subtitle ?? 'Simple, fast, and hassle-free laundry service in 3 easy steps' }}
+            </p>
+        </div>
         
-        <div class="hero-cta">
-            <a href="{{ route('customer.orders.create') }}" class="btn-hero btn-hero-primary">
-                {{ $settings->hero_cta_primary }}
-            </a>
-            <a href="{{ route('tracking.index') }}" class="btn-hero btn-hero-secondary">
-                {{ $settings->hero_cta_secondary }}
-            </a>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Step 1 -->
+            <div class="feature-card bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-2xl font-black mb-4">
+                    1
+                </div>
+                <div class="text-6xl mb-4">📱</div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Order Online</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Choose your service and schedule a pickup time that works for you
+                </p>
+            </div>
+            
+            <!-- Step 2 -->
+            <div class="feature-card bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-2xl font-black mb-4">
+                    2
+                </div>
+                <div class="text-6xl mb-4">🚗</div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">We Pick Up</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Our professional team arrives, collects your laundry, and handles it with care
+                </p>
+            </div>
+            
+            <!-- Step 3 -->
+            <div class="feature-card bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-2xl font-black mb-4">
+                    3
+                </div>
+                <div class="text-6xl mb-4">✨</div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Delivered Clean</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Clean, fresh, and neatly folded laundry delivered right to your doorstep
+                </p>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- How It Works -->
+<!-- Services Section -->
+<section id="services" class="section section-alt">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-4">Our Services</h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Choose the package that fits your needs
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            @forelse($services as $service)
+            <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2">
+                <div class="h-2 bg-gradient-to-r from-blue-600 to-purple-600"></div>
+                <div class="p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">{{ $service->name }}</h3>
+                    <div class="flex items-baseline mb-4">
+                        <span class="text-5xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Rp {{ number_format($service->price_per_kg, 0, ',', '.') }}
+                        </span>
+                        <span class="text-xl text-gray-500 ml-2">/kg</span>
+                    </div>
+                    <p class="text-gray-600 mb-6 leading-relaxed min-h-[3rem]">
+                        {{ $service->description ?? 'Premium laundry service with best quality' }}
+                    </p>
+                    <a href="{{ route('customer.orders.create') }}" class="block w-full text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-bold hover:shadow-xl transition-all">
+                        Choose Service →
+                    </a>
+                </div>
+            </div>
+            @empty
+            <div class="col-span-full text-center py-12">
+                <div class="text-6xl mb-4">🔜</div>
+                <p class="text-xl text-gray-600">Services coming soon</p>
+            </div>
+            @endforelse
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
 <section class="section">
-    <h2 class="section-title">{{ $settings->how_it_works_title }}</h2>
-    <p class="section-subtitle">{{ $settings->how_it_works_subtitle }}</p>
-    
-    <div class="steps">
-        <div class="step-card">
-            <div class="step-icon">📱</div>
-            <div class="step-number">1</div>
-            <h3 class="step-title">Pesan Online</h3>
-            <p class="step-desc">Pilih layanan favorit dan tentukan waktu pickup yang cocok untuk kamu</p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-black text-gray-900 mb-4">
+                {{ $settings->why_choose_title ?? 'Why Choose Us' }}
+            </h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                {{ $settings->why_choose_subtitle ?? 'We provide the best laundry experience' }}
+            </p>
         </div>
         
-        <div class="step-card">
-            <div class="step-icon">🚗</div>
-            <div class="step-number">2</div>
-            <h3 class="step-title">Kami Jemput</h3>
-            <p class="step-desc">Tim profesional kami datang, ambil cucian, dan kerjakan dengan sempurna</p>
-        </div>
-        
-        <div class="step-card">
-            <div class="step-icon">✨</div>
-            <div class="step-number">3</div>
-            <h3 class="step-title">Antar Bersih</h3>
-            <p class="step-desc">Cucian bersih, wangi, rapi diantar langsung ke tempatmu</p>
-        </div>
-    </div>
-</section>
-
-<!-- Services -->
-<section class="section section-alt">
-    <h2 class="section-title">Layanan Kami</h2>
-    <p class="section-subtitle">Pilih paket yang sesuai dengan kebutuhanmu</p>
-    
-    <div class="services-grid">
-        @forelse($services as $service)
-        <div class="service-card">
-            <h3 class="service-name">{{ $service->name }}</h3>
-            <div class="service-price">Rp {{ number_format($service->price_per_kg, 0, ',', '.') }}<span style="font-size: 1.25rem; font-weight: 400; color: #6B7280;">/kg</span></div>
-            <p class="service-desc">{{ $service->description ?? 'Layanan laundry premium dengan kualitas terbaik dan harga terjangkau untuk kebutuhan sehari-hari' }}</p>
-            <a href="{{ route('customer.orders.create') }}" class="btn btn-primary btn-block">Pilih Layanan →</a>
-        </div>
-        @empty
-        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: #6B7280;">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🔜</div>
-            <p style="font-size: 1.125rem; margin: 0;">Layanan akan segera tersedia</p>
-        </div>
-        @endforelse
-    </div>
-</section>
-
-<!-- Why Choose Us -->
-<section class="section">
-    <h2 class="section-title">{{ $settings->why_choose_title }}</h2>
-    <p class="section-subtitle">{{ $settings->why_choose_subtitle }}</p>
-    
-    <div class="features">
-        <div class="feature">
-            <div class="feature-icon">⚡</div>
-            <h3 class="feature-title">Super Cepat</h3>
-            <p class="feature-desc">Proses kilat dengan hasil maksimal, tepat waktu</p>
-        </div>
-        
-        <div class="feature">
-            <div class="feature-icon">💰</div>
-            <h3 class="feature-title">Harga Ramah</h3>
-            <p class="feature-desc">Harga terjangkau tanpa mengurangi kualitas</p>
-        </div>
-        
-        <div class="feature">
-            <div class="feature-icon">👔</div>
-            <h3 class="feature-title">Tim Pro</h3>
-            <p class="feature-desc">Berpengalaman, terlatih, dan terpercaya</p>
-        </div>
-        
-        <div class="feature">
-            <div class="feature-icon">✅</div>
-            <h3 class="feature-title">Dijamin Puas</h3>
-            <p class="feature-desc">Garansi 100% uang kembali jika tidak puas</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="text-center">
+                <div class="text-6xl mb-4">⚡</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Super Fast</h3>
+                <p class="text-gray-600">Lightning-fast service with maximum results, always on time</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="text-6xl mb-4">💰</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Affordable Price</h3>
+                <p class="text-gray-600">Best prices without compromising on quality</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="text-6xl mb-4">👔</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">Professional Team</h3>
+                <p class="text-gray-600">Experienced, trained, and trustworthy professionals</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="text-6xl mb-4">✅</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">100% Satisfaction</h3>
+                <p class="text-gray-600">Money-back guarantee if you're not satisfied</p>
+            </div>
         </div>
     </div>
 </section>
 
 <!-- CTA Section -->
-<section class="cta-section">
-    <div class="cta-content">
-        <h2>{{ $settings->cta_section_title }}</h2>
-        <p>{{ $settings->cta_section_text }}</p>
-        <a href="{{ route('customer.orders.create') }}" class="btn-cta">{{ $settings->cta_button_text }}</a>
+<section class="section bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-4xl md:text-5xl font-black mb-6">
+            {{ $settings->cta_section_title ?? 'Ready to Experience Premium Laundry?' }}
+        </h2>
+        <p class="text-xl mb-8 text-blue-100">
+            {{ $settings->cta_section_text ?? 'Join thousands of satisfied customers today' }}
+        </p>
+        <a href="{{ route('customer.orders.create') }}" class="inline-flex items-center gap-2 bg-white text-blue-600 px-8 py-4 rounded-xl font-bold text-lg hover:shadow-2xl transition-all transform hover:scale-105">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+            </svg>
+            {{ $settings->cta_button_text ?? 'Start Now' }}
+        </a>
     </div>
 </section>
-
-<!-- Footer -->
-<footer class="footer">
-    <div class="footer-content">
-        <div class="footer-section">
-            <h3>LaundryKu</h3>
-            <p style="line-height: 1.7; margin: 0;">{{ $settings->footer_description }}</p>
-        </div>
-        
-        <div class="footer-section">
-            <h3>Link Cepat</h3>
-            <ul class="footer-links">
-                <li><a href="{{ route('customer.orders.create') }}">Pesan Laundry</a></li>
-                <li><a href="{{ route('tracking.index') }}">Lacak Pesanan</a></li>
-                @auth
-                    <li><a href="{{ route('customer.dashboard') }}">Dashboard</a></li>
-                @else
-                    <li><a href="{{ route('login') }}">Login</a></li>
-                    <li><a href="{{ route('register') }}">Daftar</a></li>
-                @endauth
-            </ul>
-        </div>
-        
-        <div class="footer-section">
-            <h3>Hubungi Kami</h3>
-            <ul class="footer-links">
-                <li>📧 {{ $settings->contact_email }}</li>
-                <li>📱 {{ $settings->contact_phone }}</li>
-                <li>📍 {{ $settings->contact_address }}</li>
-            </ul>
-        </div>
-    </div>
-</footer>
 @endsection

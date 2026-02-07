@@ -23,7 +23,6 @@
         
         <!-- Left Side: Image (Hidden on Mobile) -->
         <div class="hidden lg:block relative w-0 flex-1">
-            <img class="absolute inset-0 h-full w-full object-cover" src="https://images.unsplash.com/photo-1545173168-9f1947eebb8f?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80" alt="Laundry Background">
             <div class="absolute inset-0 bg-primary-600 mix-blend-multiply opacity-40"></div>
             <div class="absolute inset-0 flex flex-col justify-end p-12 text-white">
                 <h2 class="text-4xl font-bold mb-4">VIP Laundry</h2>

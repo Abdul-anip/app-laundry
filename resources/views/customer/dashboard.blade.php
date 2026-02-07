@@ -1,247 +1,172 @@
-@extends('layouts.simple')
+@extends('layouts.customer')
 
-@section('title', 'Dashboard - LaundryKu')
-
-@push('styles')
-<style>
-    body { 
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        margin: 0;
-        padding: 0;
-    }
-    
-    .dashboard-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 3rem 2rem;
-    }
-    
-    .dashboard-header {
-        background: white;
-        border-radius: 20px;
-        padding: 3rem;
-        margin-bottom: 2.5rem;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-    }
-    
-    .welcome-text {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #1F2937;
-        margin: 0 0 0.5rem 0;
-    }
-    
-    .subtitle-text {
-        font-size: 1.125rem;
-        color: #6B7280;
-        margin: 0;
-    }
-    
-    .points-badge {
-        display: inline-block;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border-radius: 50px;
-        font-size: 1.25rem;
-        font-weight: 700;
-        margin-top: 1.5rem;
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-    }
-    
-    .points-label {
-        font-size: 0.875rem;
-        opacity: 0.9;
-        margin-right: 0.5rem;
-    }
-    
-    .quick-actions {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 2rem;
-        margin-bottom: 2.5rem;
-    }
-    
-    .action-card {
-        background: white;
-        border-radius: 20px;
-        padding: 2.5rem;
-        text-align: center;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        text-decoration: none;
-        display: block;
-        border: 2px solid transparent;
-    }
-    
-    .action-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
-        border-color: #667eea;
-    }
-    
-    .action-card.primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-    }
-    
-    .action-card.primary:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 16px 40px rgba(102, 126, 234, 0.35);
-    }
-    
-    .action-icon {
-        width: 60px;
-        height: 60px;
-        background: rgba(102, 126, 234, 0.1);
-        border-radius: 16px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 1.5rem;
-        font-size: 1.75rem;
-        font-weight: 700;
-    }
-    
-    .action-card.primary .action-icon {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
-    }
-    
-    .action-title {
-        font-size: 1.375rem;
-        font-weight: 700;
-        margin: 0 0 0.75rem 0;
-        color: #1F2937;
-    }
-    
-    .action-card.primary .action-title {
-        color: white;
-    }
-    
-    .action-desc {
-        font-size: 0.95rem;
-        color: #6B7280;
-        margin: 0;
-        line-height: 1.6;
-    }
-    
-    .action-card.primary .action-desc {
-        color: rgba(255, 255, 255, 0.9);
-    }
-    
-    .logout-section {
-        text-align: center;
-        padding: 2rem 0;
-    }
-    
-    .btn-logout {
-        background: white;
-        color: #667eea;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        padding: 0.875rem 2rem;
-        border-radius: 14px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-    
-    .btn-logout:hover {
-        background: #F9FAFB;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-    }
-    
-    @media (max-width: 768px) {
-        .dashboard-container {
-            padding: 2rem 1rem;
-        }
-        .dashboard-header {
-            padding: 2rem;
-        }
-        .welcome-text {
-            font-size: 2rem;
-        }
-        .quick-actions {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-        }
-    }
-</style>
-@endpush
+@section('title', 'Dashboard - VIP Laundry')
 
 @section('content')
-<div class="dashboard-container">
-    <div class="dashboard-header" style="position: relative;">
-        <!-- Notification Bell -->
-        <div style="position: absolute; top: 2rem; right: 2rem;">
-            <x-dropdown align="right" width="60">
-                <x-slot name="trigger">
-                    <button class="relative inline-flex items-center p-2 border border-gray-200 rounded-full text-gray-500 bg-white hover:bg-gray-50 focus:outline-none transition ease-in-out duration-150 shadow-sm">
-                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                        </svg>
-                        @if(auth()->user()->unreadNotifications->count() > 0)
-                            <span class="absolute top-0 right-0 block h-3 w-3 rounded-full bg-red-600 ring-2 ring-white"></span>
-                        @endif
-                    </button>
-                </x-slot>
+<div class="mb-4">
+    <h1 class="text-2xl font-bold text-gray-900">Selamat Datang, {{ auth()->user()->name }}!</h1>
+    <p class="text-gray-600">Kelola pesanan laundry Anda dengan mudah</p>
+</div>
 
-                <x-slot name="content">
-                    <div class="px-4 py-2 border-b border-gray-100 font-semibold text-gray-700">
-                        Notifikasi
-                    </div>
-                    @forelse(auth()->user()->unreadNotifications as $notification)
-                        <x-dropdown-link :href="route('customer.orders.show', $notification->data['order_id'])" class="text-sm border-b border-gray-50">
-                            <div class="font-bold text-gray-800">{{ $notification->data['title'] }}</div>
-                            <div class="text-xs text-gray-500">{{ $notification->data['message'] }}</div>
-                            <div class="text-xs text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</div>
-                        </x-dropdown-link>
-                    @empty
-                        <div class="px-4 py-3 text-sm text-center text-gray-500">
-                            Tidak ada notifikasi baru
-                        </div>
-                    @endforelse
-                </x-slot>
-            </x-dropdown>
-        </div>
-
-        <h1 class="welcome-text">Selamat Datang, {{ auth()->user()->name }}!</h1>
-        <p class="subtitle-text">Kelola pesanan laundry Anda dengan mudah</p>
-        <div class="points-badge">
-            <span class="points-label">Loyalty Points:</span>
-            {{ number_format(auth()->user()->points, 0, ',', '.') }}
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-3">
+    <!-- Total Orders -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center w-12 h-12 bg-primary-100 rounded-lg">
+                    <svg class="w-6 h-6 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-500">Total Pesanan</p>
+                <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->orders()->count() }}</p>
+            </div>
         </div>
     </div>
-    
-    <div class="quick-actions">
-        <a href="{{ route('customer.orders.create') }}" class="action-card primary">
-            <div class="action-icon">+</div>
-            <h3 class="action-title">Buat Pesanan</h3>
-            <p class="action-desc">Pesan layanan laundry baru dengan mudah</p>
-        </a>
-        
-        <a href="{{ route('customer.orders.index') }}" class="action-card">
-            <div class="action-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">≡</div>
-            <h3 class="action-title">Riwayat Pesanan</h3>
-            <p class="action-desc">Lihat semua pesanan Anda</p>
-        </a>
-        
-        <a href="{{ route('tracking.index') }}" class="action-card">
-            <div class="action-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">⌕</div>
-            <h3 class="action-title">Lacak Pesanan</h3>
-            <p class="action-desc">Cek status pesanan real-time</p>
-        </a>
+
+    <!-- Active Orders -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center w-12 h-12 bg-yellow-100 rounded-lg">
+                    <svg class="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-500">Sedang Diproses</p>
+                <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->orders()->whereIn('status', ['pending', 'process'])->count() }}</p>
+            </div>
+        </div>
     </div>
-    
-    <div class="logout-section">
-        <form method="POST" action="{{ route('logout') }}" style="display: inline-block;">
-            @csrf
-            <button type="submit" class="btn-logout">Logout</button>
-        </form>
+
+    <!-- Completed -->
+    <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <div class="flex items-center justify-center w-12 h-12 bg-green-100 rounded-lg">
+                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="ml-4">
+                <p class="text-sm font-medium text-gray-500">Selesai</p>
+                <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->orders()->where('status', 'delivered')->count() }}</p>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Quick Actions -->
+<div class="mb-6">
+    <h2 class="mb-4 text-lg font-semibold text-gray-900">Quick Actions</h2>
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <!-- New Order -->
+        <a href="{{ route('customer.orders.create') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+            <div class="flex items-center mb-2">
+                <div class="flex items-center justify-center w-10 h-10 bg-primary-100 rounded-lg">
+                    <svg class="w-6 h-6 text-primary-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900">Buat Pesanan</h3>
+            <p class="text-sm text-gray-600">Pesan layanan laundry baru</p>
+        </a>
+
+        <!-- Order History -->
+        <a href="{{ route('customer.orders.index') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+            <div class="flex items-center mb-2">
+                <div class="flex items-center justify-center w-10 h-10 bg-purple-100 rounded-lg">
+                    <svg class="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900">Riwayat Pesanan</h3>
+            <p class="text-sm text-gray-600">Lihat semua pesanan Anda</p>
+        </a>
+
+        <!-- Track Order -->
+        <a href="{{ route('tracking.index') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+            <div class="flex items-center mb-2">
+                <div class="flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg">
+                    <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900">Lacak Pesanan</h3>
+            <p class="text-sm text-gray-600">Cek status cucian real-time</p>
+        </a>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+@if(auth()->user()->orders()->exists())
+<div>
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-900">Pesanan Terbaru</h2>
+        <a href="{{ route('customer.orders.index') }}" class="text-sm font-medium text-primary-600 hover:text-primary-800">
+            Lihat Semua →
+        </a>
+    </div>
+    
+    <div class="bg-white border border-gray-200 rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Order Code</th>
+                        <th scope="col" class="px-6 py-3">Tanggal</th>
+                        <th scope="col" class="px-6 py-3">Total</th>
+                        <th scope="col" class="px-6 py-3">Status</th>
+                        <th scope="col" class="px-6 py-3">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach(auth()->user()->orders()->latest()->take(5)->get() as $order)
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap font-mono text-xs">
+                            {{ $order->order_code }}
+                        </td>
+                        <td class="px-6 py-4">
+                            {{ $order->created_at->format('d M Y') }}
+                        </td>
+                        <td class="px-6 py-4 font-semibold">
+                            Rp {{ number_format($order->total_price, 0, ',', '.') }}
+                        </td>
+                        <td class="px-6 py-4">
+                            @php
+                                $statusColors = [
+                                    'pending' => 'bg-yellow-100 text-yellow-800',
+                                    'process' => 'bg-blue-100 text-blue-800',
+                                    'finished' => 'bg-green-100 text-green-800',
+                                    'delivered' => 'bg-gray-100 text-gray-800',
+                                ];
+                            @endphp
+                            <span class="px-2.5 py-0.5 rounded text-xs font-medium {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
+                                {{ ucfirst($order->status) }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <a href="{{ route('customer.orders.show', $order) }}" class="font-medium text-primary-600 hover:underline">
+                                Detail
+                            </a>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@endif
+
 @endsection

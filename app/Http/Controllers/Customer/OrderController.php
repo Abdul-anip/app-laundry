@@ -77,9 +77,16 @@ class OrderController extends Controller
             $bundleId = null;
 
             // 1. Calculate Subtotal
+            // NOTE: For online orders, we ignore the customer's estimated weight for the initial price.
+            // Valid weight must be input by Admin after pickup.
+            
+            $estimatedWeight = 0; // Default to 0
+            
             if ($request->order_type === 'service') {
                 $service = Service::findOrFail($request->service_id);
-                $subtotal = $service->price_per_kg * $request->weight_kg;
+                // $subtotal = $service->price_per_kg * $request->weight_kg; // OLD LOGIC
+                $subtotal = 0; // Set to 0 initially
+                $estimatedWeight = 0; // Set to 0 initially
                 $serviceId = $service->id;
             } else {
                 $bundle = Bundle::findOrFail($request->bundle_id);
@@ -110,7 +117,7 @@ class OrderController extends Controller
                     ->where('is_active', true)
                     ->where(function ($query) {
                         $query->whereNull('expired_at')
-                              ->orWhere('expired_at', '>=', now());
+                            ->orWhere('expired_at', '>=', now());
                     })
                     ->first();
 
@@ -154,7 +161,7 @@ class OrderController extends Controller
                 'latitude' => $request->latitude,
                 'longitude' => $request->longitude,
                 'fabric_type' => $request->fabric_type,
-                'weight_kg' => $request->weight_kg ?? 0,
+                'weight_kg' => $estimatedWeight, // Force 0 for service
                 'pickup_date' => null,
                 'pickup_time' => null,
                 'distance_km' => $request->distance_km,

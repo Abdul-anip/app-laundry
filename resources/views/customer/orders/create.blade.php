@@ -385,6 +385,7 @@ function updatePickupFee(distance) {
     } else {
         const fee = (dist - 2) * 5000;
         feeInfoDiv.innerHTML = `<span class="text-yellow-600">💰 Ongkir: Rp ${fee.toLocaleString('id-ID')} (jarak ${distance} km)</span>`;
+        feeInfoDiv.innerHTML += `<div class="text-xs text-gray-500 mt-1">Note: Harga laundry akan dihitung setelah ditimbang oleh petugas.</div>`;
     }
 }
 </script>

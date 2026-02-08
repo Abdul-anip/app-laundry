@@ -92,31 +92,49 @@
                     <span class="text-gray-600">Tipe Pesanan</span>
                     <span class="font-medium text-gray-900">
                         @if($order->service_id)
-                            {{ $order->service->name }} ({{ floatval($order->weight_kg) }} kg)
+                            {{ $order->service->name }} 
+                            @if(in_array($order->status, ['pending', 'pickup']))
+                                <span class="text-xs text-yellow-600">(Menunggu Penimbangan)</span>
+                            @else
+                                ({{ floatval($order->weight_kg) }} kg)
+                            @endif
                         @elseif($order->bundle_id)
                             {{ $order->bundle->name }}
                         @endif
                     </span>
                 </div>
-                 <div class="flex justify-between">
-                    <span class="text-gray-600">Subtotal</span>
-                    <span class="font-medium text-gray-900">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
-                </div>
+                
+                {{-- Conditional Price Display --}}
+                @if(!in_array($order->status, ['pending', 'pickup']))
+                     <div class="flex justify-between">
+                        <span class="text-gray-600">Subtotal</span>
+                        <span class="font-medium text-gray-900">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</span>
+                    </div>
+                @endif
+
                  <div class="flex justify-between">
                     <span class="text-gray-600">Ongkos Kirim ({{ floatval($order->distance_km) }} km)</span>
                     <span class="font-medium text-gray-900">Rp {{ number_format($order->pickup_fee, 0, ',', '.') }}</span>
                 </div>
-                @if($order->discount > 0)
-                <div class="flex justify-between text-green-600">
-                    <span>Diskon Promo</span>
-                    <span>- Rp {{ number_format($order->discount, 0, ',', '.') }}</span>
-                </div>
+
+                @if(!in_array($order->status, ['pending', 'pickup']))
+                    @if($order->discount > 0)
+                    <div class="flex justify-between text-green-600">
+                        <span>Diskon Promo</span>
+                        <span>- Rp {{ number_format($order->discount, 0, ',', '.') }}</span>
+                    </div>
+                    @endif
+                    
+                    <div class="flex justify-between text-lg font-bold border-t pt-3 mt-3">
+                        <span>Total Bayar</span>
+                        <span>Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
+                    </div>
+                @else
+                    <div class="flex justify-between text-lg font-bold border-t pt-3 mt-3 text-gray-500">
+                        <span>Total Bayar</span>
+                        <span class="text-sm italic">Menunggu Penimbangan & Konfirmasi Admin</span>
+                    </div>
                 @endif
-                
-                <div class="flex justify-between text-lg font-bold border-t pt-3 mt-3">
-                    <span>Total Bayar</span>
-                    <span>Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
-                </div>
             </div>
 
             <!-- Review Section -->

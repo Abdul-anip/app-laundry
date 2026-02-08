@@ -3,7 +3,6 @@
 @section('title', 'Mode Kasir POS')
 
 @push('styles')
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
     /* Select2 Tailwind Override */
     .select2-container .select2-selection--single {
@@ -257,28 +256,42 @@
 @endsection
 
 @push('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    $(document).ready(function() {
+    // Function to initialize POS logic
+    function initPOS() {
+        // Destroy existing Select2 if it exists to prevent duplication issues
+        if ($('#customer_search').hasClass("select2-hidden-accessible")) {
+             $('#customer_search').select2('destroy');
+        }
+
         $('#customer_search').select2({
             placeholder: '-- Cari Pelanggan --',
             allowClear: true,
+            minimumInputLength: 0, 
             width: '100%',
             ajax: {
                 url: '{{ route("admin.orders.get_customers") }}',
                 dataType: 'json',
                 delay: 250,
-                data: function (params) { return { q: params.term }; },
+                data: function (params) { 
+                    return { 
+                        q: params.term || '' 
+                    }; 
+                },
                 processResults: function (data) {
-                    data.results.unshift({ id: 'manual', text: '+ Input Manual', type: 'manual' });
+                    if (!data.results) return { results: [] };
+                    const hasManual = data.results.some(r => r.id === 'manual');
+                    if (!hasManual) {
+                        data.results.unshift({ id: 'manual', text: '+ Input Manual', type: 'manual' });
+                    }
                     return { results: data.results };
                 },
-                cache: true
+                cache: false
             }
         });
 
-        $('#customer_search').on('select2:select', function (e) {
+        // Re-bind events
+        $('#customer_search').off('select2:select').on('select2:select', function (e) {
             var data = e.params.data;
             if (data.type === 'manual') {
                 $('#customer_type').val('manual');
@@ -294,7 +307,26 @@
                 $('#customer_name').prop('required', false);
             }
         });
+    }
+
+    // Initialize on various events to handle fresh loads and SPA navigations
+    $(document).ready(function() {
+        initPOS();
     });
+    
+    // Support for Turbo/Livewire: Use a polling mechanism to ensure it initializes even if events are missed
+    // This is a robust fallback for SPA transitions where events might fire before DOM is ready
+    let initInterval = setInterval(function() {
+        if ($('#customer_search').length > 0 && !$('#customer_search').hasClass("select2-hidden-accessible")) {
+            initPOS();
+        }
+    }, 500);
+
+    // Stop polling after 5 seconds to save resources
+    setTimeout(() => clearInterval(initInterval), 5000);
+    
+    document.addEventListener("turbo:load", initPOS);
+    document.addEventListener("livewire:navigated", initPOS);
 
     function switchType(type) {
         $('#order_type').val(type);

@@ -264,6 +264,25 @@ class OrderResource extends Resource
                                 'description' => 'Status updated to ' . ucfirst($nextStatus),
                             ]);
                             
+                            // Point System Logic (Added)
+                            if ($nextStatus === 'finished') {
+                                $points = floor($record->total_price / 10000); // 1 Point per 10k
+                                if ($points > 0 && $record->user) {
+                                    $record->user->increment('points', $points);
+                                    
+                                    \App\Models\OrderTracking::create([
+                                        'order_id' => $record->id,
+                                        'status' => 'point_added',
+                                        'description' => "Customer earned {$points} points from order total Rp " . number_format($record->total_price, 0, ',', '.'),
+                                    ]);
+                                    
+                                    \Filament\Notifications\Notification::make()
+                                        ->title("{$points} Points Added to User")
+                                        ->success()
+                                        ->send();
+                                }
+                            }
+                            
                             \Filament\Notifications\Notification::make()
                                 ->title('Status Updated')
                                 ->success()

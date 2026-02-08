@@ -79,7 +79,9 @@ class OrderController extends Controller
 
             // Point System Logic: Add points if status is 'finished' and was not previously 'finished'
             if ($request->status === 'finished' && $originalStatus !== 'finished') {
-                $points = floor($order->weight_kg);
+                // $points = floor($order->weight_kg); // OLD Logic
+                $points = floor($order->total_price / 10000); // NEW Logic: 1 Point per 10.000 IDR
+                
                 // Ensure we have a user and points > 0
                 if ($points > 0 && $order->user) {
                     $order->user->increment('points', $points);
@@ -87,7 +89,7 @@ class OrderController extends Controller
                     OrderTracking::create([
                         'order_id' => $order->id,
                         'status' => 'point_added',
-                        'description' => "Customer earned {$points} points",
+                        'description' => "Customer earned {$points} points from spending Rp " . number_format($order->total_price, 0, ',', '.'),
                     ]);
                 }
             }

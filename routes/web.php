@@ -77,6 +77,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     Route::get('/customer/orders/{order}/proof', [\App\Http\Controllers\Customer\OrderController::class, 'downloadProof'])
         ->name('customer.orders.proof');
+
+    Route::post('/customer/orders/{order}/confirm', [\App\Http\Controllers\Customer\OrderController::class, 'confirm'])
+        ->name('customer.orders.confirm');
         
     Route::post('/customer/orders/{order}/review', [\App\Http\Controllers\Customer\ReviewController::class, 'store'])
         ->name('customer.reviews.store');

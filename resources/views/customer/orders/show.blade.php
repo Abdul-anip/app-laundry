@@ -20,6 +20,21 @@
         </div>
 
         <div class="p-6">
+            <!-- Flash Messages -->
+            @if(session('success'))
+                <div class="bg-green-50 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded" role="alert">
+                    <p class="font-bold">✓ Berhasil</p>
+                    <p>{{ session('success') }}</p>
+                </div>
+            @endif
+            
+            @if(session('error'))
+                <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded" role="alert">
+                    <p class="font-bold">✗ Error</p>
+                    <p>{{ session('error') }}</p>
+                </div>
+            @endif
+
             <!-- Order Info -->
             <div class="flex justify-between items-center mb-6">
                 <div>
@@ -31,7 +46,8 @@
                     {{ $order->status === 'pickup' ? 'bg-blue-100 text-blue-800' : '' }}
                     {{ $order->status === 'process' ? 'bg-purple-100 text-purple-800' : '' }}
                     {{ $order->status === 'finished' ? 'bg-green-100 text-green-800' : '' }}
-                    {{ $order->status === 'delivered' ? 'bg-gray-100 text-gray-800' : '' }}
+                    {{ $order->status === 'delivered' ? 'bg-indigo-100 text-indigo-800' : '' }}
+                    {{ $order->status === 'completed' ? 'bg-gray-800 text-white' : '' }}
                 ">
                     {{ ucfirst($order->status) }}
                 </span>
@@ -42,14 +58,15 @@
                 <h4 class="text-md font-semibold text-gray-900 mb-4">Status Transaksi</h4>
                 <ol class="relative border-l border-gray-200 ml-3">                  
                     @php
-                        $steps = ['pending', 'pickup', 'process', 'finished', 'delivered'];
+                        $steps = ['pending', 'pickup', 'process', 'finished', 'delivered', 'completed'];
                         $currentStepIndex = array_search($order->status, $steps);
                         $labels = [
                             'pending' => 'Pesanan Diterima',
                             'pickup' => 'Penjemputan Laundry',
-                            'process' => 'Sedang Diproses (Cuci/Setrika)',
+                            'process' => 'Sedang Diproses',
                             'finished' => 'Selesai & Siap Diantar',
-                            'delivered' => 'Pesanan Diterima Customer'
+                            'delivered' => 'Pesanan Diantar',
+                            'completed' => 'Pesanan Diterima & Selesai'
                         ];
                     @endphp
 
@@ -71,9 +88,6 @@
                             <h3 class="font-medium leading-tight {{ $index <= $currentStepIndex ? 'text-blue-600' : 'text-gray-500' }}">
                                 {{ $labels[$step] }}
                             </h3>
-                            @if($index === $currentStepIndex)
-                                <p class="text-sm text-gray-500 mt-1">Status saat ini.</p>
-                            @endif
                         </li>
                     @endforeach
                 </ol>
@@ -87,7 +101,7 @@
                     <span class="text-gray-600">Nama Pelanggan</span>
                     <span class="font-medium text-gray-900">{{ $order->customer_name }}</span>
                 </div>
-                <!-- ... other details ... -->
+                
                  <div class="flex justify-between">
                     <span class="text-gray-600">Tipe Pesanan</span>
                     <span class="font-medium text-gray-900">
@@ -137,8 +151,25 @@
                 @endif
             </div>
 
+            <div class="mt-8"></div>
+            
+            <!-- CONFIRM RECEIPT SECTION -->
+            @if($order->status === 'delivered')
+                <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6 mb-8 text-center">
+                    <h3 class="text-lg font-bold text-indigo-900 mb-2">Pesanan Sudah Sampai?</h3>
+                    <p class="text-indigo-700 mb-4">Silakan konfirmasi jika laundry sudah Anda terima dengan baik. Setelah konfirmasi, Anda bisa memberikan ulasan.</p>
+                    
+                    <form action="{{ route('customer.orders.confirm', $order) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="bg-indigo-600 text-white px-6 py-3 rounded-lg font-bold hover:bg-indigo-700 transition shadow-lg w-full sm:w-auto">
+                            Konfirmasi Pesanan Diterima
+                        </button>
+                    </form>
+                </div>
+            @endif
+
             <!-- Review Section -->
-             @if(in_array($order->status, ['finished', 'delivered']))
+            @if($order->status === 'completed')
                 <hr class="my-6 border-gray-200">
                 
                 @if($order->review)
@@ -164,6 +195,7 @@
 
                         <form action="{{ route('customer.reviews.store', $order) }}" method="POST">
                             @csrf
+                            <input type="hidden" name="order_id" value="{{ $order->id }}">
                             <div class="mb-3">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Rating</label>
                                 <select name="rating" class="w-full p-2 border border-gray-300 rounded-md">

@@ -80,7 +80,7 @@ class OrderController extends Controller
             // Point System Logic: Add points if status is 'finished' and was not previously 'finished'
             if ($request->status === 'finished' && $originalStatus !== 'finished') {
                 // $points = floor($order->weight_kg); // OLD Logic
-                $points = floor($order->total_price / 10000); // NEW Logic: 1 Point per 10.000 IDR
+                $points = floor($order->total_price / 1000); // NEW Logic: 1 Point per 1.000 IDR
                 
                 // Ensure we have a user and points > 0
                 if ($points > 0 && $order->user) {

@@ -2,79 +2,117 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Invoice {{ $order->order_code }}</title>
+    <title>Invoice #{{ $order->order_code }}</title>
     <style>
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
-            color: #333;
-            line-height: 1.6;
+            color: #334155; /* Slate 700 */
+            line-height: 1.5;
             margin: 0;
-            padding: 20px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 20px;
-        }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-        .company-info {
+            padding: 0;
             font-size: 14px;
-            color: #666;
         }
-        .invoice-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin: 20px 0;
-            text-align: right;
-        }
-        .order-meta {
-            margin-bottom: 30px;
+        .header-bg {
+            background-color: #1e293b; /* Slate 800 - Navy */
+            color: #ffffff;
+            padding: 40px 40px;
             overflow: hidden;
         }
-        .meta-left {
-            float: left;
-            width: 50%;
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
         }
-        .meta-right {
+        .logo span {
+            color: #f59e0b; /* Amber 500 - Gold */
+        }
+        .company-subtitle {
+            font-size: 12px;
+            color: #94a3b8; /* Slate 400 */
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .invoice-title {
+            font-size: 32px;
+            font-weight: 300;
+            text-align: right;
+            color: #ffffff;
+            margin: 0;
+        }
+        .invoice-number {
+            font-size: 14px;
+            text-align: right;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
+        .content {
+            padding: 40px;
+        }
+        .box-container {
+            margin-bottom: 40px;
+            overflow: hidden;
+        }
+        .box {
+            float: left;
+            width: 45%;
+        }
+        .box-right {
             float: right;
-            width: 40%;
+            width: 45%;
             text-align: right;
         }
-        .meta-label {
+        .label {
+            font-size: 10px;
+            color: #64748b; /* Slate 500 */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
             font-weight: bold;
-            font-size: 13px;
-            color: #666;
         }
-        .meta-value {
-            margin-bottom: 10px;
+        .value {
+            font-size: 15px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 2px;
         }
+        .value-light {
+            font-size: 14px;
+            color: #334155;
+            font-weight: normal;
+        }
+        
+        /* Table Styling */
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 30px;
         }
         th {
-            background-color: #f5f7fa;
-            color: #333;
+            background-color: #f1f5f9; /* Slate 100 */
+            color: #475569; /* Slate 600 */
             font-weight: bold;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            padding: 12px 15px;
             text-align: left;
-            padding: 12px;
-            border-bottom: 2px solid #ddd;
+            border-bottom: 2px solid #e2e8f0;
         }
         td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #334155;
         }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+        
         .total-section {
             width: 100%;
             overflow: hidden;
-            margin-top: 20px;
+            margin-top: 10px;
         }
         .total-table {
             float: right;
@@ -82,160 +120,170 @@
         }
         .total-row td {
             border: none;
-            padding: 5px 12px;
+            padding: 8px 15px;
         }
         .grand-total {
-            font-size: 18px;
+            background-color: #1e293b;
+            color: #ffffff !important;
+            font-size: 16px;
             font-weight: bold;
-            color: #667eea;
-            border-top: 2px solid #ddd !important;
-            padding-top: 10px !important;
-        }
-        .footer {
-            margin-top: 50px;
-            text-align: center;
-            font-size: 12px;
-            color: #999;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-        }
-        .badge {
-            display: inline-block;
-            padding: 5px 10px;
+            padding: 15px !important;
             border-radius: 4px;
-            font-size: 12px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
             font-weight: bold;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .badge-paid { background-color: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
-        .badge-pending { background-color: #fef3c7; color: #92400e; border: 1px solid #fcd34d; }
+        .status-paid { background-color: #dcfce7; color: #166534; } /* Green */
+        .status-unpaid { background-color: #fee2e2; color: #991b1b; } /* Red */
+        
+        .footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .accent-bar {
+            height: 5px;
+            background-color: #f59e0b; /* Gold */
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">VIP Laundry</div>
-        <div class="company-info">
-            Premium Laundry Service<br>
-            Fast • Clean • Fragrant
-        </div>
-    </div>
-
-    <div class="invoice-details">
-        <div class="invoice-title">INVOICE</div>
-        
-        <div class="order-meta">
-            <div class="meta-left">
-                <div class="meta-label">BILLED TO:</div>
-                <div class="meta-value">
-                    <strong>{{ $order->customer_name }}</strong><br>
-                    {{ $order->phone }}<br>
-                    {{ $order->address }}
-                </div>
-            </div>
-            <div class="meta-right">
-                <div class="meta-label">ORDER NUMBER:</div>
-                <div class="meta-value">#{{ $order->order_code }}</div>
-                
-                <div class="meta-label">DATE:</div>
-                <div class="meta-value">{{ $order->created_at->format('d M Y, H:i') }}</div>
-                
-                <div class="meta-label">STATUS:</div>
-                <div class="meta-value">
-                    @if($order->payment_status == 'paid')
-                        <span class="badge badge-paid">PAID</span>
-                    @else
-                        <span class="badge badge-pending">UNPAID</span>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <table>
-        <thead>
+    <div class="accent-bar"></div>
+    
+    <div class="header-bg">
+        <table width="100%">
             <tr>
-                <th>Item / Service</th>
-                <th>Type</th>
-                <th>Qty / Weight</th>
-                <th style="text-align: right;">Price</th>
-                <th style="text-align: right;">Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                    @if($order->service)
-                        {{ $order->service->name }}
-                    @elseif($order->bundle)
-                        {{ $order->bundle->name }}
-                    @else
-                        Custom Service
-                    @endif
+                <td style="border:none; padding:0; vertical-align:top;">
+                    <div class="logo">VIP <span>LAUNDRY</span></div>
+                    <div class="company-subtitle">Premium Care for Your Best Wear</div>
                 </td>
-                <td>
-                    @if($order->service)
-                        Service (Per KG)
-                    @elseif($order->bundle)
-                        Bundle Package
-                    @else
-                        -
-                    @endif
+                <td style="border:none; padding:0; vertical-align:top;" align="right">
+                    <h1 class="invoice-title">INVOICE</h1>
+                    <div class="invoice-number">#{{ $order->order_code }}</div>
+                    <div style="margin-top: 10px;">
+                        @if($order->payment_status == 'paid')
+                            <span class="status-badge status-paid" style="border: 1px solid #ffffff;">PAID</span>
+                        @else
+                            <span class="status-badge status-unpaid" style="border: 1px solid #ffffff;">UNPAID</span>
+                        @endif
+                    </div>
                 </td>
-                <td>
-                    @if($order->service)
-                        {{ $order->weight_kg }} kg
-                    @else
-                        1 unit
-                    @endif
-                </td>
-                <td style="text-align: right;">
-                    @if($order->service)
-                        Rp {{ number_format($order->service->price_per_kg, 0, ',', '.') }}
-                    @elseif($order->bundle)
-                        Rp {{ number_format($order->bundle->price, 0, ',', '.') }}
-                    @else
-                        -
-                    @endif
-                </td>
-                <td style="text-align: right;">
-                    @if($order->service)
-                        Rp {{ number_format($order->subtotal, 0, ',', '.') }}
-                    @else
-                        Rp {{ number_format($order->subtotal, 0, ',', '.') }}
-                    @endif
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="total-section">
-        <table class="total-table">
-            <tr class="total-row">
-                <td style="text-align: right;">Subtotal:</td>
-                <td style="text-align: right; width: 120px;">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</td>
-            </tr>
-            @if($order->pickup_fee > 0)
-            <tr class="total-row">
-                <td style="text-align: right;">Pickup Fee:</td>
-                <td style="text-align: right;">Rp {{ number_format($order->pickup_fee, 0, ',', '.') }}</td>
-            </tr>
-            @endif
-            @if($order->discount > 0)
-            <tr class="total-row">
-                <td style="text-align: right; color: #059669;">Discount:</td>
-                <td style="text-align: right; color: #059669;">- Rp {{ number_format($order->discount, 0, ',', '.') }}</td>
-            </tr>
-            @endif
-            <tr class="total-row">
-                <td class="grand-total" style="text-align: right;">Total:</td>
-                <td class="grand-total" style="text-align: right;">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
             </tr>
         </table>
     </div>
 
-    <div class="footer">
-        <p>Thank you for choosing VIP Laundry! We appreciate your business.</p>
-        <p>If you have any questions about this invoice, please contact us.</p>
+    <div class="content">
+        <div class="box-container">
+            <div class="box">
+                <div class="label">BILLED TO</div>
+                <div class="value">{{ $order->customer_name }}</div>
+                <div class="value-light">{{ $order->phone }}</div>
+                <div class="value-light" style="margin-top:5px; max-width: 80%;">{{ $order->address }}</div>
+            </div>
+            
+            <div class="box-right">
+                <div class="label">DATE ISSUED</div>
+                <div class="value">{{ $order->created_at->format('d M Y') }}</div>
+                <div class="value-light">{{ $order->created_at->format('H:i') }} WIB</div>
+                
+                <div class="label" style="margin-top: 15px;">SERVICE TYPE</div>
+                <div class="value">
+                    @if($order->service) Regular Service
+                    @elseif($order->bundle) Bundle Package
+                    @else Custom Order @endif
+                </div>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th width="40%">DESCRIPTION</th>
+                    <th width="20%" class="text-center">QTY / WEIGHT</th>
+                    <th width="20%" class="text-right">PRICE</th>
+                    <th width="20%" class="text-right">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div style="font-weight:bold; color: #1e293b;">
+                            @if($order->service) {{ $order->service->name }}
+                            @elseif($order->bundle) {{ $order->bundle->name }}
+                            @else Custom Service @endif
+                        </div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
+                            {{ $order->fabric_type ? 'Type: ' . $order->fabric_type : 'Standard Wash & Fold' }}
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        @if($order->service) {{ floatval($order->weight_kg) }} Kg
+                        @else 1 Unit @endif
+                    </td>
+                    <td class="text-right">
+                        @if($order->service) Rp {{ number_format($order->service->price_per_kg, 0, ',', '.') }}
+                        @elseif($order->bundle) Rp {{ number_format($order->bundle->price, 0, ',', '.') }}
+                        @else - @endif
+                    </td>
+                    <td class="text-right" style="font-weight: bold;">
+                        Rp {{ number_format($order->subtotal, 0, ',', '.') }}
+                    </td>
+                </tr>
+                
+                <!-- Spacer Row to push totals down if needed, or minimal content -->
+            </tbody>
+        </table>
+
+        <div class="total-section">
+            <table class="total-table">
+                <tr class="total-row">
+                    <td class="text-right" style="color: #64748b;">Subtotal</td>
+                    <td class="text-right" width="150" style="font-weight: bold;">Rp {{ number_format($order->subtotal, 0, ',', '.') }}</td>
+                </tr>
+                
+                @if($order->pickup_fee > 0)
+                <tr class="total-row">
+                    <td class="text-right" style="color: #64748b;">Pickup Fee ({{ floatval($order->distance_km) }} km)</td>
+                    <td class="text-right" style="font-weight: bold;">Rp {{ number_format($order->pickup_fee, 0, ',', '.') }}</td>
+                </tr>
+                @endif
+                
+                @if($order->discount > 0)
+                <tr class="total-row">
+                    <td class="text-right" style="color: #059669;">Discount {{ $order->promo ? '('.$order->promo->code.')' : '' }}</td>
+                    <td class="text-right" style="color: #059669; font-weight: bold;">- Rp {{ number_format($order->discount, 0, ',', '.') }}</td>
+                </tr>
+                @endif
+                
+                <tr class="total-row">
+                    <td colspan="2" style="padding: 10px 0;"></td>
+                </tr>
+                <tr class="total-row">
+                    <td class="text-right" style="vertical-align: middle; font-weight: bold; font-size: 14px; padding-right: 15px;">GRAND TOTAL</td>
+                    <td class="grand-total text-right">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <div style="clear: both;"></div>
+
+        <div class="footer">
+            <p>Thank you for your business!</p>
+            <p style="margin-top: 5px;">
+                <strong>VIP Laundry</strong> | Jl. Raya Laundry No. 123 | 0812-3456-7890 | support@viplaundry.com
+            </p>
+        </div>
     </div>
 </body>
 </html>

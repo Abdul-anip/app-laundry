@@ -31,6 +31,11 @@ class ReviewResource extends Resource
             ]);
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['user', 'order']);
+    }
+
     public static function table(Table $table): Table
     {
         return $table

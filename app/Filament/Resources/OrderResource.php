@@ -75,7 +75,8 @@ class OrderResource extends Resource
                         'info' => 'pickup',
                         'primary' => 'process',
                         'success' => 'finished',
-                        'gray' => 'delivered',
+                        'info' => 'delivered', // Changed delivered to info (blue-ish)
+                        'gray' => 'completed', // Completed is final state
                     ]),
                     
                 Tables\Columns\TextColumn::make('total_price')
@@ -96,6 +97,7 @@ class OrderResource extends Resource
                         'process' => 'Process',
                         'finished' => 'Finished',
                         'delivered' => 'Delivered',
+                        'completed' => 'Completed',
                     ])
                     ->multiple(),
                     
@@ -130,13 +132,42 @@ class OrderResource extends Resource
                 
                 // 1. WhatsApp Action Group
                 Tables\Actions\ActionGroup::make([
-                    // WA Pickup
+                    // WA Pickup (One-time Action)
                     Tables\Actions\Action::make('wa_pickup')
                         ->label('WA Pickup')
                         ->icon('heroicon-o-chat-bubble-left-right')
                         ->color('success')
-                        ->url(fn (Order $record) => "https://wa.me/" . self::formatPhone($record->phone) . "?text=" . urlencode("Halo {$record->customer_name}, kurir VIP Laundry sedang menuju lokasi Anda untuk penjemputan order {$record->order_code}. Mohon ditunggu ya! \n\n- Terima Kasih"), true)
-                        ->visible(fn (Order $record) => in_array($record->status, ['pending', 'pickup'])),
+                        ->requiresConfirmation()
+                        ->modalHeading('Kirim WA Pickup?')
+                        ->modalDescription('Pesan ini hanya bisa dikirim SATU KALI. Pastikan Anda siap menjemput order ini.')
+                        ->action(function (Order $record) {
+                            // 1. Create Log
+                            \App\Models\OrderTracking::create([
+                                'order_id' => $record->id,
+                                'status' => 'pickup_notified', // Custom internal status or just description
+                                'description' => 'WhatsApp Pickup notification sent',
+                            ]);
+                            
+                            // 2. Build URL
+                            $url = "https://wa.me/" . self::formatPhone($record->phone) . "?text=" . urlencode("Halo {$record->customer_name}, kurir VIP Laundry sedang menuju lokasi Anda untuk penjemputan order {$record->order_code}. Mohon ditunggu ya! \n\n- Terima Kasih");
+                            
+                            // 3. Notification
+                            \Filament\Notifications\Notification::make()
+                                ->title('WA Pickup Marked as Sent')
+                                ->success()
+                                ->send();
+
+                            // 4. Redirect
+                            return redirect()->away($url);
+                        })
+                        ->visible(function (Order $record) {
+                            // Visible if status is pending/pickup AND notification NOT YET sent
+                            $alreadySent = $record->orderTrackings()
+                                ->where('description', 'WhatsApp Pickup notification sent')
+                                ->exists();
+                                
+                            return in_array($record->status, ['pending', 'pickup']) && !$alreadySent;
+                        }),
 
                     // WA Invoice / Konfirmasi
                     Tables\Actions\Action::make('wa_invoice')
@@ -230,7 +261,7 @@ class OrderResource extends Resource
                     ->modalHeading('Update Order Status')
                     ->modalDescription(fn (Order $record) => match ($record->status) {
                         'pending' => 'Mulai penjemputan? Jangan lupa kirim WA Pickup ke customer.',
-                        'pickup' => 'Lanjut proses cuci? Pastikan BERAT sudah diinput dan customer sudah konfirmasi harga.',
+                        'pickup' => 'Lanjut proses cuci? Pastikan BERAT sudah diinput.',
                         'process' => 'Order selesai dicuci/setrika?',
                         'finished' => 'Antar kembali ke customer?',
                         default => 'Lanjut ke status berikutnya?',
@@ -266,7 +297,7 @@ class OrderResource extends Resource
                             
                             // Point System Logic (Added)
                             if ($nextStatus === 'finished') {
-                                $points = floor($record->total_price / 10000); // 1 Point per 10k
+                                $points = floor($record->total_price / 1000); // 1 Point per 1k
                                 if ($points > 0 && $record->user) {
                                     $record->user->increment('points', $points);
                                     

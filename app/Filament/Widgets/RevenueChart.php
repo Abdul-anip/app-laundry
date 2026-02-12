@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Filament\Widgets;
+
 use App\Models\Order;
 use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;

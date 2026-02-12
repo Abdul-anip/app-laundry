@@ -21,9 +21,9 @@ class ReviewController extends Controller
             abort(403);
         }
 
-        // Check Status: Must be finished or delivered
-        if (!in_array($order->status, ['finished', 'delivered'])) {
-            return back()->with('error', 'You can only review finished orders.');
+        // Check Status: Must be completed
+        if ($order->status !== 'completed') {
+            return back()->with('error', 'You can only review completed orders.');
         }
 
         // Check Existence: One review per order

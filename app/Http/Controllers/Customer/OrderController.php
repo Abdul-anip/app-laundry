@@ -241,4 +241,50 @@ class OrderController extends Controller
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('customer.orders.pdf', compact('order'));
         return $pdf->download('invoice-' . $order->order_code . '.pdf');
     }
+
+    /**
+     * Customer confirms order receipt.
+     */
+    public function confirm(Order $order)
+    {
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        if ($order->status !== 'delivered') {
+            return back()->with('error', 'Order must be delivered before confirming.');
+        }
+
+        try {
+            DB::beginTransaction();
+
+            $order->update(['status' => 'completed']);
+
+            \App\Models\OrderTracking::create([
+                'order_id' => $order->id,
+                'status' => 'completed',
+                'description' => 'Order received and confirmed by customer',
+            ]);
+
+            // Notify Admin (Optional)
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            foreach ($admins as $admin) {
+                \Filament\Notifications\Notification::make()
+                    ->title('Order Completed ✅')
+                    ->body("Customer {$order->customer_name} telah mengkonfirmasi penerimaan order {$order->order_code}.")
+                    ->success()
+                    ->sendToDatabase($admin);
+            }
+
+            DB::commit();
+
+            return back()->with('success', 'Terima kasih! Pesanan telah dikonfirmasi selesai.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order confirmation failed: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            return back()->with('error', 'Gagal mengkonfirmasi pesanan. Error: ' . $e->getMessage());
+        }
+    }
 }

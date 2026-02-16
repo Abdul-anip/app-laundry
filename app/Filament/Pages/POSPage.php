@@ -184,6 +184,8 @@ class POSPage extends Page
                         // RIGHT COLUMN - SUMMARY
                         Forms\Components\Section::make('Payment & Summary')
                             ->columnSpan(1)
+                            ->description('Review order details and complete payment')
+                            ->icon('heroicon-o-shopping-cart')
                             ->schema([
                                 Forms\Components\ToggleButtons::make('payment_method')
                                     ->label('Payment Method')
@@ -224,10 +226,10 @@ class POSPage extends Page
                                     ->content(fn (Get $get) => '- Rp ' . number_format($get('temp_discount') ?? 0, 0, ',', '.'))
                                     ->visible(fn (Get $get) => ($get('temp_discount') ?? 0) > 0),
 
-                                Forms\Components\Placeholder::make('summary_total')
-                                    ->label('TOTAL ORDER')
-                                    ->content(fn (Get $get) => 'Rp ' . number_format($get('temp_total_price') ?? 0, 0, ',', '.'))
-                                    ->extraAttributes(['class' => 'text-2xl font-bold text-primary-600']),
+                                Forms\Components\View::make('filament.components.pos-total-display')
+                                    ->viewData([
+                                        'getTotal' => fn () => $this->data['temp_total_price'] ?? 0
+                                    ]),
 
                                 // Hidden fields to store calculated values for submission
                                 Forms\Components\Hidden::make('temp_subtotal'),
@@ -237,6 +239,7 @@ class POSPage extends Page
                                 Forms\Components\Actions::make([
                                     Forms\Components\Actions\Action::make('submit')
                                         ->label('Create Order')
+                                        ->icon('heroicon-m-check-circle')
                                         ->color('primary')
                                         ->size('lg')
                                         ->action('createOrder')

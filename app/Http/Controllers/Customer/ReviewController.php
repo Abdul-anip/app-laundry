@@ -31,12 +31,27 @@ class ReviewController extends Controller
             return back()->with('error', 'You have already reviewed this order.');
         }
 
-        Review::create([
+        $review = Review::create([
             'order_id' => $order->id,
             'user_id' => auth()->id(),
             'rating' => $request->rating,
             'comment' => $request->comment,
         ]);
+
+        // Notify Admins
+        $stars = str_repeat('⭐', $review->rating);
+        $commentSnippet = strlen($review->comment) > 50 
+            ? substr($review->comment, 0, 50) . '...' 
+            : $review->comment;
+            
+        \App\Helpers\FilamentNotificationHelper::notifyAdmins(
+            title: "Review Baru Diterima {$stars}",
+            body: $commentSnippet,
+            icon: 'heroicon-o-star',
+            iconColor: 'info',
+            actionUrl: route('filament.admin.resources.reviews.index'),
+            actionLabel: 'View Reviews'
+        );
 
         return back()->with('success', 'Review submitted successfully!');
     }

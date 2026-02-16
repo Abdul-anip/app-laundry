@@ -180,23 +180,14 @@ class OrderController extends Controller
             ]);
 
             // Notify Admins
-            // Notify Admins
-            $admins = \App\Models\User::where('role', 'admin')->get();
-            
-            foreach ($admins as $admin) {
-                \Filament\Notifications\Notification::make()
-                    ->title('Pesanan Baru Masuk! 🆕')
-                    ->body("Pesanan {$order->order_code} dari {$order->customer_name} perlu diproses.")
-                    ->icon('heroicon-o-shopping-bag')
-                    ->info()
-                    ->actions([
-                        \Filament\Notifications\Actions\Action::make('view')
-                            ->button()
-                            ->url(route('filament.admin.resources.orders.view', $order), shouldOpenInNewTab: true)
-                            ->markAsRead(),
-                    ])
-                    ->sendToDatabase($admin);
-            }
+            \App\Helpers\FilamentNotificationHelper::notifyAdmins(
+                title: 'Pesanan Baru Masuk! 🆕',
+                body: "Pesanan {$order->order_code} dari {$order->customer_name} perlu diproses.",
+                icon: 'heroicon-o-shopping-bag',
+                iconColor: 'info',
+                actionUrl: route('filament.admin.resources.orders.view', $order),
+                actionLabel: 'View Order'
+            );
 
             DB::commit();
 
@@ -266,15 +257,15 @@ class OrderController extends Controller
                 'description' => 'Order received and confirmed by customer',
             ]);
 
-            // Notify Admin (Optional)
-            $admins = \App\Models\User::where('role', 'admin')->get();
-            foreach ($admins as $admin) {
-                \Filament\Notifications\Notification::make()
-                    ->title('Order Completed ✅')
-                    ->body("Customer {$order->customer_name} telah mengkonfirmasi penerimaan order {$order->order_code}.")
-                    ->success()
-                    ->sendToDatabase($admin);
-            }
+            // Notify Admins
+            \App\Helpers\FilamentNotificationHelper::notifyAdmins(
+                title: 'Order Completed ✅',
+                body: "Customer {$order->customer_name} telah mengkonfirmasi penerimaan order {$order->order_code}.",
+                icon: 'heroicon-o-check-circle',
+                iconColor: 'success',
+                actionUrl: route('filament.admin.resources.orders.view', $order),
+                actionLabel: 'View Order'
+            );
 
             DB::commit();
 

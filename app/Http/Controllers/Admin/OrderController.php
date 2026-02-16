@@ -64,18 +64,6 @@ class OrderController extends Controller
                 'description' => 'Status updated to ' . ucfirst($request->status) . ' by Admin',
             ]);
 
-            // Trigger Notifications
-            if ($originalStatus !== 'finished' && $request->status === 'finished') {
-                if ($order->user) {
-                    $order->user->notify(new \App\Notifications\OrderFinished($order));
-                }
-            }
-
-            if ($originalStatus !== 'delivered' && $request->status === 'delivered') {
-                if ($order->order_source === 'online' && $order->user) {
-                    $order->user->notify(new \App\Notifications\OrderDelivered($order));
-                }
-            }
 
             // Point System Logic: Add points if status is 'finished' and was not previously 'finished'
             if ($request->status === 'finished' && $originalStatus !== 'finished') {

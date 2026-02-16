@@ -87,7 +87,7 @@
                         <span class="text-xl font-black text-white">VIP Laundry</span>
                     </div>
                     <p class="text-sm text-gray-400 leading-relaxed">
-                        Your premium laundry service partner. Fast, clean, and fragrant - every single time.
+                        {{ \App\Models\Setting::get('footer_company_description', 'Your premium laundry service partner. Fast, clean, and fragrant - every single time.') }}
                     </p>
                 </div>
                 
@@ -110,15 +110,15 @@
                     <ul class="space-y-2 text-sm">
                         <li class="flex items-center gap-2">
                             <span>📧</span>
-                            <span>support@viplaundry.com</span>
+                            <span>{{ \App\Models\Setting::get('footer_email', 'support@viplaundry.com') }}</span>
                         </li>
                         <li class="flex items-center gap-2">
                             <span>📱</span>
-                            <span>+62 812-3456-7890</span>
+                            <span>{{ \App\Models\Setting::get('footer_phone', '+62 812-3456-7890') }}</span>
                         </li>
                         <li class="flex items-center gap-2">
                             <span>📍</span>
-                            <span>Jakarta, Indonesia</span>
+                            <span>{{ \App\Models\Setting::get('footer_address', 'Jakarta, Indonesia') }}</span>
                         </li>
                     </ul>
                 </div>

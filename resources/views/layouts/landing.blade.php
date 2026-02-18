@@ -5,21 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'VIP Laundry')</title>
     
-    <!-- Google Fonts - Inter -->
+    <!-- DNS Prefetch & Preconnect for faster font loading -->
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts - Inter with optimized loading -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- App Assets -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+    <!-- Critical CSS - Inline for immediate render -->
     <style>
         body { 
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             margin: 0;
             padding: 0;
         }
+        /* Prevent FOUT (Flash of Unstyled Text) */
+        .font-black { font-weight: 900; }
+        .font-bold { font-weight: 700; }
+        .font-medium { font-weight: 500; }
     </style>
+    
+    <!-- App Assets - Optimized -->
+    @vite(['resources/css/landing.css', 'resources/js/landing.js'])
+    
     @stack('styles')
 </head>
 <body>

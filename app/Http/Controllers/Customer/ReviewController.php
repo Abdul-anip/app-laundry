@@ -44,14 +44,18 @@ class ReviewController extends Controller
             ? substr($review->comment, 0, 50) . '...' 
             : $review->comment;
             
-        \App\Helpers\FilamentNotificationHelper::notifyAdmins(
-            title: "Review Baru Diterima {$stars}",
-            body: $commentSnippet,
-            icon: 'heroicon-o-star',
-            iconColor: 'info',
-            actionUrl: route('filament.admin.resources.reviews.index'),
-            actionLabel: 'View Reviews'
-        );
+        try {
+            \App\Helpers\FilamentNotificationHelper::notifyAdmins(
+                title: "Review Baru Diterima {$stars}",
+                body: $commentSnippet,
+                icon: 'heroicon-o-star',
+                iconColor: 'info',
+                actionUrl: route('admin.reviews.index'),
+                actionLabel: 'View Reviews'
+            );
+        } catch (\Exception $notifEx) {
+            \Illuminate\Support\Facades\Log::warning('Review notification failed: ' . $notifEx->getMessage());
+        }
 
         return back()->with('success', 'Review submitted successfully!');
     }

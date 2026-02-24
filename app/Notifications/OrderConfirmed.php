@@ -47,7 +47,7 @@ class OrderConfirmed extends Notification
             'body' => "Customer {$this->order->customer_name} telah mengkonfirmasi penerimaan order {$this->order->order_code}.",
             'icon' => 'heroicon-o-check-circle',
             'status' => 'success',
-            'url' => route('filament.admin.resources.orders.view', $this->order),
+            'url' => route('admin.orders.show', $this->order),
         ];
     }
 }

@@ -24,7 +24,7 @@ Route::post('/tracking', [App\Http\Controllers\TrackingController::class, 'searc
 */
 Route::get('/dashboard', function () {
     if (auth()->user()->role === 'admin') {
-        return redirect()->to('/admin');
+        return redirect()->route('admin.dashboard');
     }
 
     return redirect()->route('customer.dashboard');
@@ -32,21 +32,56 @@ Route::get('/dashboard', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes
+| Admin Routes (Native Laravel — Filament replaced)
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    // POS Mode
-    Route::get('admin/pos', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'pos'])->name('admin.pos');
-    
-    // Offline Orders (Restored for POS)
-    Route::get('admin/offline-orders/customers', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'getCustomers'])->name('admin.orders.get_customers');
-    Route::get('admin/offline-orders/create', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'create'])->name('admin.orders.create_offline');
-    Route::post('admin/offline-orders', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'store'])->name('admin.orders.store_offline');
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
 
-    // Print Receipt
-    Route::get('admin/orders/{order}/print', [\App\Http\Controllers\Admin\OrderController::class, 'printReceipt'])
-        ->name('admin.orders.print');
+    // Dashboard
+    Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+
+    // Orders
+    Route::get('orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
+    Route::get('orders/{order}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
+    Route::post('orders/{order}/advance', [\App\Http\Controllers\Admin\OrderController::class, 'advanceStatus'])->name('orders.advance');
+    Route::post('orders/{order}/weight', [\App\Http\Controllers\Admin\OrderController::class, 'inputWeight'])->name('orders.weight');
+    Route::get('orders/{order}/wa-pickup', [\App\Http\Controllers\Admin\OrderController::class, 'waPickup'])->name('orders.wa-pickup');
+    Route::get('orders/{order}/wa-invoice', [\App\Http\Controllers\Admin\OrderController::class, 'waInvoice'])->name('orders.wa-invoice');
+    Route::get('orders/{order}/wa-status', [\App\Http\Controllers\Admin\OrderController::class, 'waStatus'])->name('orders.wa-status');
+    Route::get('orders/{order}/print', [\App\Http\Controllers\Admin\OrderController::class, 'printReceipt'])->name('orders.print');
+
+    // POS (Offline Orders)
+    Route::get('pos', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'pos'])->name('pos');
+    Route::get('offline-orders/customers', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'getCustomers'])->name('orders.get_customers');
+    Route::post('offline-orders', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'store'])->name('orders.store_offline');
+    Route::get('offline-orders/check-promo', [\App\Http\Controllers\Admin\OfflineOrderController::class, 'checkPromo'])->name('orders.check_promo');
+
+    // Services
+    Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class)
+        ->except(['show']);
+
+    // Bundles
+    Route::resource('bundles', \App\Http\Controllers\Admin\BundleController::class)
+        ->except(['show']);
+
+    // Promos
+    Route::resource('promos', \App\Http\Controllers\Admin\PromoController::class)
+        ->except(['show']);
+
+    // Customers (read-only)
+    Route::get('customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('customers.index');
+    Route::get('customers/{user}', [\App\Http\Controllers\Admin\CustomerController::class, 'show'])->name('customers.show');
+
+    // Reviews (read-only)
+    Route::get('reviews', [\App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');
+
+    // Reports
+    Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/pdf', [\App\Http\Controllers\Admin\ReportController::class, 'downloadPdf'])->name('reports.pdf');
+
+    // Settings
+    Route::get('settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings.index');
+    Route::post('settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
 });
 
 /*

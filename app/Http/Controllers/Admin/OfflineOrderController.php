@@ -250,4 +250,37 @@ class OfflineOrderController extends Controller
             return back()->withInput()->withErrors(['error' => 'Failed to create order: ' . $e->getMessage()]);
         }
     }
+
+    /**
+     * AJAX: Validate promo code and return discount info
+     */
+    public function checkPromo(Request $request)
+    {
+        $code = strtoupper($request->code);
+        $subtotal = (float) $request->subtotal;
+
+        $promo = Promo::where('code', $code)
+            ->where('is_active', true)
+            ->where(fn($q) => $q->whereNull('expired_at')->orWhereDate('expired_at', '>=', now()))
+            ->first();
+
+        if (!$promo) {
+            return response()->json(['valid' => false, 'message' => 'Kode promo tidak valid atau sudah kadaluarsa.']);
+        }
+
+        $discount = $promo->discount_type === 'percent'
+            ? $subtotal * ($promo->value / 100)
+            : $promo->value;
+
+        if ($discount > $subtotal) $discount = $subtotal;
+
+        return response()->json([
+            'valid'         => true,
+            'promo_id'      => $promo->id,
+            'discount_type' => $promo->discount_type,
+            'value'         => $promo->value,
+            'discount'      => round($discount),
+            'message'       => 'Promo berhasil diterapkan!',
+        ]);
+    }
 }

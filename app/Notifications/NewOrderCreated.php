@@ -60,7 +60,7 @@ class NewOrderCreated extends Notification
             'body' => "Pesanan {$this->order->order_code} dari {$this->order->customer_name} perlu diproses.",
             'icon' => 'heroicon-o-shopping-bag',
             'status' => 'info',
-            'url' => route('filament.admin.resources.orders.view', $this->order),
+            'url' => route('admin.orders.show', $this->order),
         ];
     }
 }

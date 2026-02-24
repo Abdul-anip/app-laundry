@@ -54,7 +54,7 @@ class NewReviewReceived extends Notification
             'body' => "{$commentSnippet}",
             'icon' => 'heroicon-o-star',
             'status' => 'info',
-            'url' => route('filament.admin.resources.reviews.index'),
+            'url' => route('admin.reviews.index'),
         ];
     }
 }

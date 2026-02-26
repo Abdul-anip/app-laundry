@@ -123,47 +123,25 @@ class OfflineOrderController extends Controller
                 $customerName = $request->customer_name;
             }
 
-            // --- 1. Hitung Subtotal ---
-            $subtotal  = 0;
-            $serviceId = null;
-            $bundleId  = null;
-
-            if ($request->order_type === 'service') {
-                $service   = Service::findOrFail($request->service_id);
-                $subtotal  = $service->price_per_kg * $request->weight_kg;
-                $serviceId = $service->id;
-            } else {
-                $bundle   = Bundle::findOrFail($request->bundle_id);
-                $subtotal = $bundle->price;
-                $bundleId = $bundle->id;
+            // --- Hitung Menggunakan Pricing Service ---
+            $pricingService = new \App\Services\PricingService();
+            
+            try {
+                $pricing = $pricingService->calculate(
+                    orderType: $request->order_type,
+                    serviceId: $request->service_id,
+                    bundleId: $request->bundle_id,
+                    weightKg: (float) $request->weight_kg,
+                    distanceKm: 0,
+                    promoCode: $request->promo_code,
+                    latitude: null,
+                    longitude: null,
+                    isOffline: true
+                );
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->withInput()->withErrors(['promo_code' => $e->getMessage()]);
             }
-
-            // --- 2. Pickup Fee (selalu 0 untuk offline) ---
-            $pickupFee  = 0;
-            $distanceKm = 0;
-
-            // --- 3. Diskon Promo ---
-            $discount = 0;
-            $promoId  = null;
-
-            if ($request->promo_code) {
-                $promo = Promo::where('code', $request->promo_code)
-                    ->where('is_active', true)
-                    ->where(fn($q) => $q->whereNull('expired_at')->orWhere('expired_at', '>=', now()))
-                    ->first();
-
-                if ($promo) {
-                    $promoId  = $promo->id;
-                    $discount = $promo->discount_type === 'percent'
-                        ? $subtotal * ($promo->value / 100)
-                        : $promo->value;
-
-                    $discount = min($discount, $subtotal);
-                }
-            }
-
-            // --- 4. Total ---
-            $totalPrice = $subtotal + $pickupFee - $discount;
 
             // --- 5. Generate Order Code (ATOMIC — aman dari race condition) ---
             // Sama persis dengan online order: menggunakan SELECT FOR UPDATE
@@ -177,22 +155,22 @@ class OfflineOrderController extends Controller
                 'user_id'          => auth()->id(), // Admin ID
                 'customer_user_id' => $customerUserId,
                 'order_source'     => 'offline',
-                'service_id'       => $serviceId,
-                'bundle_id'        => $bundleId,
-                'promo_id'         => $promoId,
+                'service_id'       => $pricing['service_id'],
+                'bundle_id'        => $pricing['bundle_id'],
+                'promo_id'         => $pricing['promo_id'],
                 'customer_name'    => $customerName,
                 'phone'            => $customerPhone,
                 'address'          => $request->address ?? 'Walk-in Customer (Offline)',
                 'fabric_type'      => $request->fabric_type,
-                'weight_kg'        => $request->weight_kg ?? 0,
+                'weight_kg'        => $pricing['weight_kg'],
                 'payment_method'   => $request->payment_method,
                 'pickup_date'      => now()->toDateString(),
                 'pickup_time'      => now()->toTimeString(),
-                'distance_km'      => $distanceKm,
-                'pickup_fee'       => $pickupFee,
-                'subtotal'         => $subtotal,
-                'discount'         => $discount,
-                'total_price'      => $totalPrice,
+                'distance_km'      => $pricing['distance_km'],
+                'pickup_fee'       => $pricing['pickup_fee'],
+                'subtotal'         => $pricing['subtotal'],
+                'discount'         => $pricing['discount'],
+                'total_price'      => $pricing['total_price'],
                 'status'           => 'process',
                 'description'      => $request->notes,
             ]);

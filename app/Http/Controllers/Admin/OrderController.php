@@ -125,32 +125,25 @@ class OrderController extends Controller
             'weight_kg' => 'required|numeric|min:0.1',
         ]);
 
-        $weight   = $request->weight_kg;
-        $subtotal = 0;
-
-        if ($order->service_id && $order->service) {
-            $subtotal = $order->service->price_per_kg * $weight;
-        } elseif ($order->bundle_id && $order->bundle) {
-            $subtotal = $order->subtotal; // Bundle harga tetap
-        }
-
-        $discount = 0;
-        if ($order->promo_id && $order->promo) {
-            if ($order->promo->discount_type === 'percent') {
-                $discount = $subtotal * ($order->promo->value / 100);
-            } else {
-                $discount = $order->promo->value;
-            }
-            if ($discount > $subtotal) $discount = $subtotal;
-        }
-
-        $totalPrice = $subtotal + $order->pickup_fee - $discount;
+        $pricingService = new \App\Services\PricingService();
+        $pricing = $pricingService->calculate(
+            orderType: $order->service_id ? 'service' : 'bundle',
+            serviceId: $order->service_id,
+            bundleId: $order->bundle_id,
+            weightKg: (float) $request->weight_kg,
+            distanceKm: (float) $order->distance_km,
+            promoCode: $order->promo?->code,
+            latitude: (float) $order->latitude,
+            longitude: (float) $order->longitude,
+            isOffline: $order->order_source === 'offline'
+        );
 
         $order->update([
-            'weight_kg'   => $weight,
-            'subtotal'    => $subtotal,
-            'discount'    => $discount,
-            'total_price' => $totalPrice,
+            'weight_kg'   => $pricing['weight_kg'],
+            'subtotal'    => $pricing['subtotal'],
+            'discount'    => $pricing['discount'],
+            'pickup_fee'  => $pricing['pickup_fee'], // Pastikan up to date
+            'total_price' => $pricing['total_price'],
         ]);
 
         // Kirim notifikasi ke customer bahwa berat sudah diinput

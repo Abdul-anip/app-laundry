@@ -71,56 +71,19 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            // --- 1. Hitung Subtotal ---
-            $subtotal        = 0;
-            $estimatedWeight = 0;
-            $serviceId       = null;
-            $bundleId        = null;
-
-            if ($request->order_type === 'service') {
-                $service   = Service::findOrFail($request->service_id);
-                $subtotal  = 0; // Dihitung ulang setelah admin input berat aktual
-                $serviceId = $service->id;
-            } else {
-                $bundle   = Bundle::findOrFail($request->bundle_id);
-                $subtotal = $bundle->price;
-                $bundleId = $bundle->id;
-            }
-
-            // --- 2. Pickup Fee ---
-            $pickupFee = 0;
-            if ($request->distance_km > 2) {
-                $pickupFee = ($request->distance_km - 2) * 5000;
-            }
-
-            // --- 3. Diskon Promo ---
-            $discount = 0;
-            $promoId  = null;
-
-            if ($request->promo_code) {
-                $checkPromo = Promo::where('code', $request->promo_code)->first();
-                if ($checkPromo && (!$checkPromo->is_active || ($checkPromo->expired_at && $checkPromo->expired_at->isPast()))) {
-                    DB::rollBack();
-                    return back()->withInput()->withErrors(['promo_code' => 'Kode promo sudah habis atau tidak aktif.']);
-                }
-
-                $promo = Promo::where('code', $request->promo_code)
-                    ->where('is_active', true)
-                    ->where(fn($q) => $q->whereNull('expired_at')->orWhere('expired_at', '>=', now()))
-                    ->first();
-
-                if ($promo) {
-                    $promoId  = $promo->id;
-                    $discount = $promo->discount_type === 'percent'
-                        ? $subtotal * ($promo->value / 100)
-                        : $promo->value;
-
-                    $discount = min($discount, $subtotal);
-                }
-            }
-
-            // --- 4. Total Harga ---
-            $totalPrice = $subtotal + $pickupFee - $discount;
+            // --- Hitung Menggunakan Pricing Service ---
+            $pricingService = new \App\Services\PricingService();
+            $pricing = $pricingService->calculate(
+                orderType: $request->order_type,
+                serviceId: $request->service_id,
+                bundleId: $request->bundle_id,
+                weightKg: 0, // Dihitung ulang setelah admin input berat aktual
+                distanceKm: $request->distance_km,
+                promoCode: $request->promo_code,
+                latitude: $request->latitude,
+                longitude: $request->longitude,
+                isOffline: false
+            );
 
             // --- 5. Generate Order Code (ATOMIC — aman dari race condition) ---
             // OrderCodeGenerator::generate() menggunakan SELECT FOR UPDATE
@@ -134,23 +97,23 @@ class OrderController extends Controller
                 'user_id'          => auth()->id(),
                 'customer_user_id' => auth()->id(),
                 'order_source'     => 'online',
-                'service_id'       => $serviceId,
-                'bundle_id'        => $bundleId,
-                'promo_id'         => $promoId,
+                'service_id'       => $pricing['service_id'],
+                'bundle_id'        => $pricing['bundle_id'],
+                'promo_id'         => $pricing['promo_id'],
                 'customer_name'    => $request->customer_name,
                 'phone'            => $request->phone,
                 'address'          => $request->address,
                 'latitude'         => $request->latitude,
                 'longitude'        => $request->longitude,
                 'fabric_type'      => $request->fabric_type,
-                'weight_kg'        => $estimatedWeight,
+                'weight_kg'        => 0, // Estimasi
                 'pickup_date'      => null,
                 'pickup_time'      => null,
-                'distance_km'      => $request->distance_km,
-                'pickup_fee'       => $pickupFee,
-                'subtotal'         => $subtotal,
-                'discount'         => $discount,
-                'total_price'      => $totalPrice,
+                'distance_km'      => $pricing['distance_km'],
+                'pickup_fee'       => $pricing['pickup_fee'],
+                'subtotal'         => $pricing['subtotal'],
+                'discount'         => $pricing['discount'],
+                'total_price'      => $pricing['total_price'],
                 'status'           => 'pending',
             ]);
 

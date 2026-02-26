@@ -158,17 +158,64 @@
             };
         @endphp
         @if($nextLabel)
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5" x-data="{ showConfirmModal: false }">
             <h3 class="font-bold text-gray-800 mb-3 text-sm">Update Status</h3>
-            <form method="POST" action="{{ route('admin.orders.advance', $order) }}"
-                  onsubmit="return confirm('Yakin update status order ini?')">
-                @csrf
-                <button type="submit"
-                        class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                    {{ $nextLabel }}
-                </button>
-            </form>
+            <button @click="showConfirmModal = true" type="button"
+                    class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-colors text-sm flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                {{ $nextLabel }}
+            </button>
+
+            <!-- Alpine.js Confirmation Modal -->
+            <div x-show="showConfirmModal" x-cloak class="relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                <!-- Background backdrop -->
+                <div x-show="showConfirmModal"
+                     x-transition:enter="ease-out duration-300"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     x-transition:leave="ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity"></div>
+              
+                <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                  <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+                    <!-- Modal panel -->
+                    <div x-show="showConfirmModal"
+                         @click.away="showConfirmModal = false"
+                         x-transition:enter="ease-out duration-300"
+                         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                         x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                         x-transition:leave="ease-in duration-200"
+                         x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                         x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                         class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-md">
+                      <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                          <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-50 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                          </div>
+                          <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                            <h3 class="text-base font-bold leading-6 text-gray-900" id="modal-title">Konfirmasi Update Status</h3>
+                            <div class="mt-2">
+                              <p class="text-sm text-gray-500">Apakah Anda yakin ingin mengupdate status order <strong>{{ $order->order_code }}</strong> ini ke tahap selanjutnya (<strong>{{ $nextLabel }}</strong>)?</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                        <form method="POST" action="{{ route('admin.orders.advance', $order) }}" class="inline-flex w-full sm:w-auto">
+                            @csrf
+                            <button type="submit" class="inline-flex w-full justify-center rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 sm:ml-3 sm:w-auto transition-colors">Yakin, Update Status</button>
+                        </form>
+                        <button type="button" @click="showConfirmModal = false" class="mt-3 inline-flex w-full justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-colors">Batal</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
         </div>
         @endif
 

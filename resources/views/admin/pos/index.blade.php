@@ -56,49 +56,68 @@
         </a>
     </div>
 
+    <!-- Flash Messages (Toast Notifications) -->
+    <div class="fixed top-4 right-4 z-50 flex flex-col gap-3 pointer-events-none" style="min-width: 320px; max-width: 400px;">
         @if (session('success'))
-            <div class="rounded-md bg-green-50 p-4 mb-6 ring-1 ring-inset ring-green-600/10">
-                <div class="flex">
-                    <div class="flex-shrink-0">
-                        <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-green-800">{{ session('success') }}</h3>
-                        @if (session('print_order_id'))
-                            <div class="mt-2">
-                                <a href="{{ route('admin.orders.print', session('print_order_id')) }}" target="_blank" class="rounded-md bg-green-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600">
-                                    🖨️ Cetak Struk
-                                </a>
-                            </div>
-                        @endif
-                    </div>
+            <div x-data="{ show: false }" x-init="setTimeout(() => show = true, 100); setTimeout(() => show = false, 6000)"
+                 x-show="show" 
+                 x-transition:enter="transition ease-out duration-300 transform"
+                 x-transition:enter-start="opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-4"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="pointer-events-auto flex items-start gap-3 bg-white border border-gray-100 shadow-xl rounded-xl p-4 overflow-hidden relative">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mt-0.5">
+                    <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-gray-900">Berhasil!</p>
+                    <p class="text-sm text-gray-500 truncate">{{ session('success') }}</p>
+                    @if (session('print_order_id'))
+                        <div class="mt-3">
+                            <a href="{{ route('admin.orders.print', session('print_order_id')) }}" target="_blank" class="inline-flex items-center gap-1.5 rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                                Cetak Struk
+                            </a>
+                        </div>
+                    @endif
+                </div>
+                <button @click="show = false" class="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
         @endif
-
+        
         @if ($errors->any())
-            <div class="rounded-md bg-red-50 p-4 mb-6 ring-1 ring-inset ring-red-600/10">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
-                    </svg>
+            <div x-data="{ show: false }" x-init="setTimeout(() => show = true, 100);"
+                 x-show="show" 
+                 x-transition:enter="transition ease-out duration-300 transform"
+                 x-transition:enter-start="opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-4"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:translate-x-0"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="pointer-events-auto flex items-start gap-3 bg-white border border-gray-100 shadow-xl rounded-xl p-4 overflow-hidden relative">
+                <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>
+                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-red-50 flex items-center justify-center mt-0.5">
+                    <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800">Terdapat kesalahan input:</h3>
-                    <div class="mt-2 text-sm text-red-700">
-                        <ul class="list-disc pl-5 space-y-1">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold text-gray-900">Terjadi Kesalahan</p>
+                    <div class="text-sm text-gray-500 mt-1 space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <p>{{ $error }}</p>
+                        @endforeach
                     </div>
                 </div>
+                <button @click="show = false" class="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
-        </div>
-    @endif
+        @endif
+    </div>
 
     <form action="{{ route('admin.orders.store_offline') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         @csrf

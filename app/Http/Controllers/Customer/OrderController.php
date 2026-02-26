@@ -7,6 +7,7 @@ use App\Models\Bundle;
 use App\Models\Order;
 use App\Models\Promo;
 use App\Models\Service;
+use App\Services\OrderCodeGenerator; // <-- TAMBAH INI
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -31,15 +32,14 @@ class OrderController extends Controller
      */
     public function create()
     {
-        // Check if user has phone number
         if (empty(auth()->user()->phone)) {
             return redirect()->route('profile.edit')
                 ->with('error', 'Silakan lengkapi nomor telepon Anda terlebih dahulu sebelum membuat pesanan.');
         }
-        
+
         $services = Service::all();
-        $bundles = Bundle::all();
-        
+        $bundles  = Bundle::all();
+
         return view('customer.orders.create', compact('services', 'bundles'));
     }
 
@@ -48,138 +48,119 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        // Double check user has phone number
         if (empty(auth()->user()->phone)) {
             return redirect()->route('profile.edit')
                 ->with('error', 'Silakan lengkapi nomor telepon Anda terlebih dahulu sebelum membuat pesanan.');
         }
-        
+
         $request->validate([
             'customer_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string',
-            'latitude' => 'nullable|numeric',
-            'longitude' => 'nullable|numeric',
-            'order_type' => 'required|in:service,bundle',
-            'service_id' => 'required_if:order_type,service|nullable|exists:services,id',
-            'bundle_id' => 'required_if:order_type,bundle|nullable|exists:bundles,id',
-            'weight_kg' => 'required_if:order_type,service|nullable|numeric|min:1',
-            'fabric_type' => 'nullable|string|max:100',
-            'distance_km' => 'required|numeric|min:0',
-            'promo_code' => 'nullable|string|exists:promos,code',
+            'phone'         => 'required|string|max:20',
+            'address'       => 'required|string',
+            'latitude'      => 'nullable|numeric',
+            'longitude'     => 'nullable|numeric',
+            'order_type'    => 'required|in:service,bundle',
+            'service_id'    => 'required_if:order_type,service|nullable|exists:services,id',
+            'bundle_id'     => 'required_if:order_type,bundle|nullable|exists:bundles,id',
+            'weight_kg'     => 'required_if:order_type,service|nullable|numeric|min:1',
+            'fabric_type'   => 'nullable|string|max:100',
+            'distance_km'   => 'required|numeric|min:0',
+            'promo_code'    => 'nullable|string|exists:promos,code',
         ]);
 
         try {
             DB::beginTransaction();
 
-            $subtotal = 0;
-            $serviceId = null;
-            $bundleId = null;
+            // --- 1. Hitung Subtotal ---
+            $subtotal        = 0;
+            $estimatedWeight = 0;
+            $serviceId       = null;
+            $bundleId        = null;
 
-            // 1. Calculate Subtotal
-            // NOTE: For online orders, we ignore the customer's estimated weight for the initial price.
-            // Valid weight must be input by Admin after pickup.
-            
-            $estimatedWeight = 0; // Default to 0
-            
             if ($request->order_type === 'service') {
-                $service = Service::findOrFail($request->service_id);
-                // $subtotal = $service->price_per_kg * $request->weight_kg; // OLD LOGIC
-                $subtotal = 0; // Set to 0 initially
-                $estimatedWeight = 0; // Set to 0 initially
+                $service   = Service::findOrFail($request->service_id);
+                $subtotal  = 0; // Dihitung ulang setelah admin input berat aktual
                 $serviceId = $service->id;
             } else {
-                $bundle = Bundle::findOrFail($request->bundle_id);
+                $bundle   = Bundle::findOrFail($request->bundle_id);
                 $subtotal = $bundle->price;
                 $bundleId = $bundle->id;
             }
 
-            // 2. Calculate Pickup Fee
-            // Rule: <= 2km free, > 2km -> (dist - 2) * 5000
+            // --- 2. Pickup Fee ---
             $pickupFee = 0;
             if ($request->distance_km > 2) {
                 $pickupFee = ($request->distance_km - 2) * 5000;
             }
 
-            // 3. Calculate Discount
+            // --- 3. Diskon Promo ---
             $discount = 0;
-            $promoId = null;
+            $promoId  = null;
+
             if ($request->promo_code) {
-                // Determine if promo exists but is invalid (inactive or expired) for error reporting
                 $checkPromo = Promo::where('code', $request->promo_code)->first();
-                if ($checkPromo) {
-                    if (!$checkPromo->is_active || ($checkPromo->expired_at && $checkPromo->expired_at->isPast())) {
-                        return back()->withInput()->withErrors(['promo_code' => 'code promo sudah habis']);
-                    }
+                if ($checkPromo && (!$checkPromo->is_active || ($checkPromo->expired_at && $checkPromo->expired_at->isPast()))) {
+                    DB::rollBack();
+                    return back()->withInput()->withErrors(['promo_code' => 'Kode promo sudah habis atau tidak aktif.']);
                 }
 
                 $promo = Promo::where('code', $request->promo_code)
                     ->where('is_active', true)
-                    ->where(function ($query) {
-                        $query->whereNull('expired_at')
-                            ->orWhere('expired_at', '>=', now());
-                    })
+                    ->where(fn($q) => $q->whereNull('expired_at')->orWhere('expired_at', '>=', now()))
                     ->first();
 
                 if ($promo) {
-                    $promoId = $promo->id;
-                    if ($promo->discount_type === 'percent') {
-                        $discount = $subtotal * ($promo->value / 100);
-                    } else {
-                        $discount = $promo->value;
-                    }
-                    
-                    // Discount cannot exceed subtotal
-                    if ($discount > $subtotal) {
-                        $discount = $subtotal;
-                    }
+                    $promoId  = $promo->id;
+                    $discount = $promo->discount_type === 'percent'
+                        ? $subtotal * ($promo->value / 100)
+                        : $promo->value;
+
+                    $discount = min($discount, $subtotal);
                 }
             }
 
-            // 4. Calculate Total
+            // --- 4. Total Harga ---
             $totalPrice = $subtotal + $pickupFee - $discount;
 
-            // 5. Generate Order Code (LDRY-YYYY-XXXX)
-            $year = date('Y');
-            $lastOrder = Order::whereYear('created_at', $year)->orderBy('id', 'desc')->first();
-            $lastNumber = $lastOrder ? intval(substr($lastOrder->order_code, -4)) : 0;
-            $newNumber = $lastNumber + 1;
-            $orderCode = 'LDRY-' . $year . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+            // --- 5. Generate Order Code (ATOMIC — aman dari race condition) ---
+            // OrderCodeGenerator::generate() menggunakan SELECT FOR UPDATE
+            // sehingga tidak mungkin dua request mendapat kode yang sama,
+            // bahkan jika dikirim pada milidetik yang sama.
+            $orderCode = OrderCodeGenerator::generate();
 
-            // 6. Create Order
+            // --- 6. Buat Order ---
             $order = Order::create([
-                'order_code' => $orderCode,
-                'user_id' => auth()->id(),
-                'customer_user_id' => auth()->id(), // Same as user_id for online orders
-                'order_source' => 'online',
-                'service_id' => $serviceId,
-                'bundle_id' => $bundleId,
-                'promo_id' => $promoId,
-                'customer_name' => $request->customer_name,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'latitude' => $request->latitude,
-                'longitude' => $request->longitude,
-                'fabric_type' => $request->fabric_type,
-                'weight_kg' => $estimatedWeight, // Force 0 for service
-                'pickup_date' => null,
-                'pickup_time' => null,
-                'distance_km' => $request->distance_km,
-                'pickup_fee' => $pickupFee,
-                'subtotal' => $subtotal,
-                'discount' => $discount,
-                'total_price' => $totalPrice,
-                'status' => 'pending',
+                'order_code'       => $orderCode,
+                'user_id'          => auth()->id(),
+                'customer_user_id' => auth()->id(),
+                'order_source'     => 'online',
+                'service_id'       => $serviceId,
+                'bundle_id'        => $bundleId,
+                'promo_id'         => $promoId,
+                'customer_name'    => $request->customer_name,
+                'phone'            => $request->phone,
+                'address'          => $request->address,
+                'latitude'         => $request->latitude,
+                'longitude'        => $request->longitude,
+                'fabric_type'      => $request->fabric_type,
+                'weight_kg'        => $estimatedWeight,
+                'pickup_date'      => null,
+                'pickup_time'      => null,
+                'distance_km'      => $request->distance_km,
+                'pickup_fee'       => $pickupFee,
+                'subtotal'         => $subtotal,
+                'discount'         => $discount,
+                'total_price'      => $totalPrice,
+                'status'           => 'pending',
             ]);
 
-            // Create Order Tracking
             \App\Models\OrderTracking::create([
-                'order_id' => $order->id,
-                'status' => 'pending',
+                'order_id'    => $order->id,
+                'status'      => 'pending',
                 'description' => 'Order created by customer',
             ]);
 
-            // Notify Admins (database notification)
+            // Notifikasi admin
             try {
                 \App\Helpers\FilamentNotificationHelper::notifyAdmins(
                     title: 'Pesanan Baru Masuk! 🆕',
@@ -196,7 +177,7 @@ class OrderController extends Controller
             DB::commit();
 
             return redirect()->route('customer.orders.show', $order)
-                ->with('success', 'Order created successfully!');
+                ->with('success', 'Order berhasil dibuat!');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -211,24 +192,20 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        // Ensure user owns the order
         if ($order->user_id !== auth()->id()) {
             abort(403);
         }
 
-        // Mark relevant notifications as read
         auth()->user()->unreadNotifications->where('data.order_id', $order->id)->markAsRead();
-
 
         return view('customer.orders.show', compact('order'));
     }
 
     /**
-     * Download order proof as PDF
+     * Download order proof as PDF.
      */
     public function downloadProof(Order $order)
     {
-        // Ensure user owns the order
         if ($order->user_id !== auth()->id()) {
             abort(403);
         }
@@ -256,12 +233,11 @@ class OrderController extends Controller
             $order->update(['status' => 'completed']);
 
             \App\Models\OrderTracking::create([
-                'order_id' => $order->id,
-                'status' => 'completed',
+                'order_id'    => $order->id,
+                'status'      => 'completed',
                 'description' => 'Order received and confirmed by customer',
             ]);
 
-            // Notify Admins (database notification)
             try {
                 \App\Helpers\FilamentNotificationHelper::notifyAdmins(
                     title: 'Order Completed ✅',
@@ -282,7 +258,6 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Order confirmation failed: ' . $e->getMessage());
-            Log::error('Stack trace: ' . $e->getTraceAsString());
             return back()->with('error', 'Gagal mengkonfirmasi pesanan. Error: ' . $e->getMessage());
         }
     }

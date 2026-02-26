@@ -153,6 +153,15 @@ class OrderController extends Controller
             'total_price' => $totalPrice,
         ]);
 
+        // Kirim notifikasi ke customer bahwa berat sudah diinput
+        if ($order->customer_user_id && $order->customerUser) {
+            try {
+                $order->customerUser->notify(new \App\Notifications\WeightUpdated($order));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Weight notification failed: ' . $e->getMessage());
+            }
+        }
+
         return back()->with('success', 'Berat & harga berhasil diupdate!');
     }
 

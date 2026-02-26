@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (Schema::hasTable('landing_page_settings')) {
+            return;
+        }
+
         Schema::create('landing_page_settings', function (Blueprint $table) {
             $table->id();
             $table->text('laundry_address')->nullable();

@@ -19,7 +19,7 @@
         </div>
 
         {{-- Row 2: Status + Sumber (2 kolom) --}}
-        <div class="grid grid-cols-2 gap-3 mb-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
 
             {{-- Status: Custom dropdown checkbox (Alpine.js) --}}
             <div x-data="{
@@ -82,7 +82,7 @@
         </div>
 
         {{-- Row 3: Tanggal + Buttons --}}
-        <div class="grid grid-cols-2 gap-3 items-end">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 items-end">
             <div>
                 <label class="block text-xs font-medium text-gray-600 mb-1">Dari Tanggal</label>
                 <input type="date" name="date_from" value="{{ request('date_from') }}"

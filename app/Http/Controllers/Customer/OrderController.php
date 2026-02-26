@@ -20,7 +20,8 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::where('user_id', auth()->id())
+        $orders = Order::with(['service', 'bundle'])
+            ->where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 

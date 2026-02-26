@@ -12,6 +12,14 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
+        $request->validate([
+            'date_from'  => 'nullable|date',
+            'date_until' => 'nullable|date|after_or_equal:date_from',
+            'status'     => 'nullable|array',
+            'source'     => 'nullable|in:online,offline',
+            'search'     => 'nullable|string|max:255',
+        ]);
+
         $query = Order::with(['service', 'bundle', 'promo'])
             ->orderBy('created_at', 'desc');
 

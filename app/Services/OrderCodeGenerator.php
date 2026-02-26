@@ -24,37 +24,33 @@ class OrderCodeGenerator
     {
         $year = $year ?? (int) date('Y');
 
-        // INSERT OR IGNORE: buat row untuk tahun ini jika belum ada
-        // Aman dijalankan berkali-kali (idempotent)
-        DB::table('order_sequences')->insertOrIgnore([
-            'year'        => $year,
-            'last_number' => 0,
-            'created_at'  => now(),
-            'updated_at'  => now(),
-        ]);
-
-        // ATOMIC: Lock row ini agar tidak ada request lain yang bisa membaca
-        // nilai yang sama sebelum kita increment.
-        // SELECT ... FOR UPDATE memblokir semua reader/writer lain pada row ini
-        // hingga transaksi kita selesai (commit/rollback).
-        $sequence = DB::table('order_sequences')
-            ->where('year', $year)
-            ->lockForUpdate()
-            ->first();
-
-        $newNumber = $sequence->last_number + 1;
-
-        // Batas 9999 per tahun (4 digit). Jika melebihi, tambah digit otomatis.
-        // Dengan 9999 order/tahun, ini cukup untuk laundry skala apapun.
-        // Jika perlu lebih, ubah str_pad length di bawah menjadi 5.
-        DB::table('order_sequences')
-            ->where('year', $year)
-            ->update([
-                'last_number' => $newNumber,
+        return DB::transaction(function () use ($year) {
+            // INSERT OR IGNORE: buat row untuk tahun ini jika belum ada
+            DB::table('order_sequences')->insertOrIgnore([
+                'year'        => $year,
+                'last_number' => 0,
+                'created_at'  => now(),
                 'updated_at'  => now(),
             ]);
 
-        return 'LDRY-' . $year . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+            // ATOMIC: Lock row ini agar tidak ada request lain yang bisa membaca
+            // Jika driver db mendukung skipLocked/noWait, lebih baik. Tapi ini cara teraman.
+            $sequence = DB::table('order_sequences')
+                ->where('year', $year)
+                ->lockForUpdate()
+                ->first();
+
+            $newNumber = $sequence->last_number + 1;
+
+            DB::table('order_sequences')
+                ->where('year', $year)
+                ->update([
+                    'last_number' => $newNumber,
+                    'updated_at'  => now(),
+                ]);
+
+            return 'LDRY-' . $year . '-' . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        }, 3); // 3 adalah jumlah retries jika terjadi deadlock
     }
 
     /**

@@ -12,7 +12,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE orders MODIFY COLUMN status ENUM('pending', 'pickup', 'process', 'finished', 'delivered', 'completed') NOT NULL DEFAULT 'pending'");
+        Schema::table('orders', function (Blueprint $table) {
+            // Menggunakan tipe string untuk kompatibilitas lintas-database (MySQL, SQLite, PostgreSQL)
+            $table->string('status')->default('pending')->change();
+        });
     }
 
     /**
@@ -20,6 +23,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE orders MODIFY COLUMN status ENUM('pending', 'pickup', 'process', 'finished', 'delivered') NOT NULL DEFAULT 'pending'");
+        Schema::table('orders', function (Blueprint $table) {
+            $table->string('status')->default('pending')->change();
+        });
     }
 };

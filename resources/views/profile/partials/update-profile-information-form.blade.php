@@ -47,6 +47,15 @@
             @endif
         </div>
 
+        <div>
+            <x-input-label for="phone" :value="__('Nomor HP / WhatsApp')" />
+            <x-text-input id="phone" name="phone" type="tel" class="mt-1 block w-full" :value="old('phone', $user->phone)" autocomplete="tel" placeholder="Contoh: 08123456789" />
+            <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+            @if(empty($user->phone))
+                <p class="mt-1 text-xs text-red-500">⚠️ Nomor HP wajib diisi sebelum membuat pesanan.</p>
+            @endif
+        </div>
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 

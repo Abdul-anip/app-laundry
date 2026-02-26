@@ -32,38 +32,37 @@ class AutoConfirmOrders extends Command
     {
         $this->info('Checking for orders to auto-confirm...');
 
-        // Find orders: Status 'delivered' AND updated_at < 24 hours ago
-        $orders = Order::where('status', 'delivered')
-            ->where('updated_at', '<', Carbon::now()->subHours(24))
-            ->get();
-
-        if ($orders->isEmpty()) {
-            $this->info('No orders found requiring auto-confirmation.');
-            return;
-        }
-
         $count = 0;
-        foreach ($orders as $order) {
-            try {
-                DB::transaction(function () use ($order) {
-                    $order->update(['status' => 'completed']);
-                    
-                    OrderTracking::create([
-                        'order_id' => $order->id,
-                        'status' => 'completed',
-                        'description' => 'Automatically confirmed by system (24h timeout)',
-                    ]);
-                });
 
-                $count++;
-                $this->info("Order {$order->order_code} confirmed.");
-                
-            } catch (\Exception $e) {
-                Log::error("Failed to auto-confirm order {$order->id}: " . $e->getMessage());
-                $this->error("Failed to confirm {$order->order_code}");
-            }
+        Order::where('status', 'delivered')
+            ->where('updated_at', '<', Carbon::now()->subHours(24))
+            ->chunk(100, function ($orders) use (&$count) {
+                foreach ($orders as $order) {
+                    try {
+                        DB::transaction(function () use ($order) {
+                            $order->update(['status' => 'completed']);
+
+                            OrderTracking::create([
+                                'order_id'    => $order->id,
+                                'status'      => 'completed',
+                                'description' => 'Automatically confirmed by system (24h timeout)',
+                            ]);
+                        });
+
+                        $count++;
+                        $this->info("Order {$order->order_code} confirmed.");
+
+                    } catch (\Exception $e) {
+                        Log::error("Failed to auto-confirm order {$order->id}: " . $e->getMessage());
+                        $this->error("Failed to confirm {$order->order_code}");
+                    }
+                }
+            });
+
+        if ($count === 0) {
+            $this->info('No orders found requiring auto-confirmation.');
+        } else {
+            $this->info("Successfully auto-confirmed {$count} orders.");
         }
-
-        $this->info("Successfully auto-confirmed {$count} orders.");
     }
 }

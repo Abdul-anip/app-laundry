@@ -62,7 +62,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <!-- Step 1 -->
             <div class="feature-card bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-2xl font-black mb-4">
+                <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center text-white text-2xl font-black mb-4">
                     1
                 </div>
                 <div class="text-6xl mb-4">📱</div>
@@ -74,7 +74,7 @@
             
             <!-- Step 2 -->
             <div class="feature-card bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-2xl font-black mb-4">
+                <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center text-white text-2xl font-black mb-4">
                     2
                 </div>
                 <div class="text-6xl mb-4">🚗</div>
@@ -86,7 +86,7 @@
             
             <!-- Step 3 -->
             <div class="feature-card bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white text-2xl font-black mb-4">
+                <div class="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center text-white text-2xl font-black mb-4">
                     3
                 </div>
                 <div class="text-6xl mb-4">✨</div>
@@ -112,11 +112,11 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($services as $service)
             <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2">
-                <div class="h-2 bg-gradient-to-r from-blue-600 to-purple-600"></div>
+                <div class="h-2 bg-blue-600"></div>
                 <div class="p-8">
                     <h3 class="text-2xl font-bold text-gray-900 mb-3">{{ $service->name }}</h3>
                     <div class="flex items-baseline mb-4">
-                        <span class="text-5xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        <span class="text-5xl font-black text-blue-600">
                             Rp {{ number_format($service->price_per_kg, 0, ',', '.') }}
                         </span>
                         <span class="text-xl text-gray-500 ml-2">/kg</span>
@@ -124,7 +124,7 @@
                     <p class="text-gray-600 mb-6 leading-relaxed min-h-[3rem]">
                         {{ $service->description ?? 'Premium laundry service with best quality' }}
                     </p>
-                    <a href="{{ route('customer.orders.create') }}" class="block w-full text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-bold hover:shadow-xl transition-all">
+                    <a href="{{ route('customer.orders.create') }}" class="block w-full text-center bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold hover:shadow-xl transition-all">
                         Choose Service →
                     </a>
                 </div>
@@ -180,7 +180,7 @@
 </section>
 
 <!-- CTA Section -->
-<section class="section bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+<section class="section bg-blue-600 text-white">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 class="text-4xl md:text-5xl font-black mb-6">
             Ready to Experience Premium Laundry?

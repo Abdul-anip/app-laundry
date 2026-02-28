@@ -75,10 +75,10 @@
                 <a href="#how-it-works" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">How It Works</a>
                 <a href="{{ route('tracking.index') }}" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Track Order</a>
                 @auth
-                    <a href="{{ route('customer.dashboard') }}" class="block px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center font-medium">Dashboard</a>
+                    <a href="{{ route('customer.dashboard') }}" class="block px-3 py-2 rounded-lg bg-blue-600 text-white text-center font-medium">Dashboard</a>
                 @else
                     <a href="{{ route('login') }}" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Login</a>
-                    <a href="{{ route('register') }}" class="block px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center font-medium">Get Started</a>
+                    <a href="{{ route('register') }}" class="block px-3 py-2 rounded-lg bg-blue-600 text-white text-center font-medium">Get Started</a>
                 @endauth
             </div>
         </div>

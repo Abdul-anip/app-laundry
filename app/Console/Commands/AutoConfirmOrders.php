@@ -47,6 +47,23 @@ class AutoConfirmOrders extends Command
                                 'status'      => 'completed',
                                 'description' => 'Automatically confirmed by system (24h timeout)',
                             ]);
+
+                            // Award Points safely
+                            $points = floor($order->total_price / 1000);
+                            if ($points > 0 && $order->user) {
+                                $alreadyAwarded = OrderTracking::where('order_id', $order->id)
+                                    ->where('status', 'point_added')
+                                    ->exists();
+
+                                if (!$alreadyAwarded) {
+                                    $order->user->increment('points', $points);
+                                    OrderTracking::create([
+                                        'order_id'    => $order->id,
+                                        'status'      => 'point_added',
+                                        'description' => "Customer earned {$points} points from spending Rp " . number_format($order->total_price, 0, ',', '.'),
+                                    ]);
+                                }
+                            }
                         });
 
                         $count++;

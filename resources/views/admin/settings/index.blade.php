@@ -59,12 +59,55 @@
                 <p class="text-xs text-gray-600 mt-1">{{ $setting->laundry_address }}</p>
             </div>
             @endif
+        </div>
 
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-6">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">Pengaturan Footer Halaman Depan</h3>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Deskripsi Perusahaan Singkat
+                    </label>
+                    <textarea name="footer_company_description" rows="2"
+                              placeholder="Mitra layanan laundry premium Anda..."
+                              class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 outline-none">{{ old('footer_company_description', $footerSettings['footer_company_description'] ?? '') }}</textarea>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Email Kontak (Footer)
+                        </label>
+                        <input type="email" name="footer_email" value="{{ old('footer_email', $footerSettings['footer_email'] ?? '') }}"
+                               placeholder="support@viplaundry.com"
+                               class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Telepon/WhatsApp (Footer)
+                        </label>
+                        <input type="text" name="footer_phone" value="{{ old('footer_phone', $footerSettings['footer_phone'] ?? '') }}"
+                               placeholder="+62 812-3456-7890"
+                               class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Alamat Singkat (Footer)
+                    </label>
+                    <input type="text" name="footer_address" value="{{ old('footer_address', $footerSettings['footer_address'] ?? '') }}"
+                           placeholder="Jakarta, Indonesia"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                </div>
+            </div>
+            
             <button type="submit"
                     class="mt-6 w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-4 rounded-xl transition-colors text-sm">
-                Simpan Settings
+                Simpan Semua Pengaturan
             </button>
+        </div>
         </form>
     </div>
-</div>
 @endsection

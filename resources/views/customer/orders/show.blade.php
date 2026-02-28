@@ -38,9 +38,19 @@
             <!-- Order Info -->
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900">Order Code: {{ $order->order_code }}</h3>
+                    <h3 class="text-lg font-bold text-gray-900">Kode Pesanan: {{ $order->order_code }}</h3>
                     <p class="text-sm text-gray-500">{{ $order->created_at->format('d M Y, H:i') }}</p>
                 </div>
+                @php
+                    $statusLabels = [
+                        'pending' => 'Menunggu',
+                        'pickup' => 'Penjemputan',
+                        'process' => 'Diproses',
+                        'finished' => 'Selesai Dicuci',
+                        'delivered' => 'Dikirim',
+                        'completed' => 'Selesai'
+                    ];
+                @endphp
                 <span class="px-4 py-2 rounded-full text-sm font-bold 
                     {{ $order->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : '' }}
                     {{ $order->status === 'pickup' ? 'bg-blue-100 text-blue-800' : '' }}
@@ -49,7 +59,7 @@
                     {{ $order->status === 'delivered' ? 'bg-indigo-100 text-indigo-800' : '' }}
                     {{ $order->status === 'completed' ? 'bg-gray-800 text-white' : '' }}
                 ">
-                    {{ ucfirst($order->status) }}
+                    {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
                 </span>
             </div>
 
@@ -220,7 +230,7 @@
             <div class="mt-8 flex flex-col sm:flex-row gap-3">
                 <a href="{{ route('customer.orders.proof', $order) }}" class="flex-1 text-center bg-green-500 text-white py-3 rounded-xl font-bold hover:bg-green-600 transition shadow-lg flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    Download Invoice
+                    Unduh Bukti Pesanan
                 </a>
                 <a href="{{ route('customer.dashboard') }}" class="flex-1 text-center bg-white border-2 border-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:border-gray-300 transition">
                     Kembali ke Dashboard

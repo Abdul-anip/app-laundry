@@ -28,17 +28,17 @@
         <div class="bg-gradient-to-r from-primary-50 to-primary-100 px-4 py-3 border-b border-primary-200">
             <div class="flex items-center justify-between">
                 <div class="flex-1">
-                    <p class="text-xs text-gray-600 mb-1">Order Code</p>
+                    <p class="text-xs text-gray-600 mb-1">Kode Pesanan</p>
                     <p class="font-mono text-sm font-bold text-gray-900">{{ $order->order_code }}</p>
                 </div>
                 @php
                     $statusConfig = [
-                        'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'icon' => '⏳', 'label' => 'Pending'],
-                        'pickup' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'icon' => '🚗', 'label' => 'Pickup'],
-                        'process' => ['bg' => 'bg-indigo-100', 'text' => 'text-indigo-800', 'icon' => '🧺', 'label' => 'Process'],
-                        'finished' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'icon' => '✅', 'label' => 'Finished'],
-                        'delivered' => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'icon' => '📦', 'label' => 'Delivered'],
-                        'completed' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'icon' => '🎉', 'label' => 'Completed'],
+                        'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'icon' => '⏳', 'label' => 'Menunggu'],
+                        'pickup' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'icon' => '🚗', 'label' => 'Penjemputan'],
+                        'process' => ['bg' => 'bg-indigo-100', 'text' => 'text-indigo-800', 'icon' => '🧺', 'label' => 'Diproses'],
+                        'finished' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'icon' => '✅', 'label' => 'Selesai Dicuci'],
+                        'delivered' => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'icon' => '📦', 'label' => 'Dikirim'],
+                        'completed' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'icon' => '🎉', 'label' => 'Selesai'],
                     ];
                     $config = $statusConfig[$order->status] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'icon' => '•', 'label' => $order->status];
                 @endphp
@@ -98,7 +98,7 @@
         <table class="w-full text-sm text-left text-gray-500">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b border-gray-200">
                 <tr>
-                    <th scope="col" class="px-6 py-4 font-semibold">Order Code</th>
+                    <th scope="col" class="px-6 py-4 font-semibold">Kode Pesanan</th>
                     <th scope="col" class="px-6 py-4 font-semibold">Tanggal</th>
                     <th scope="col" class="px-6 py-4 font-semibold">Layanan</th>
                     <th scope="col" class="px-6 py-4 font-semibold">Total</th>
@@ -132,18 +132,18 @@
                     <td class="px-6 py-4">
                         @php
                             $statusConfig = [
-                                'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'icon' => '⏳'],
-                                'pickup' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'icon' => '🚗'],
-                                'process' => ['bg' => 'bg-indigo-100', 'text' => 'text-indigo-800', 'icon' => '🧺'],
-                                'finished' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'icon' => '✅'],
-                                'delivered' => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'icon' => '📦'],
-                                'completed' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'icon' => '🎉'],
+                                'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800', 'icon' => '⏳', 'label' => 'Menunggu'],
+                                'pickup' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'icon' => '🚗', 'label' => 'Penjemputan'],
+                                'process' => ['bg' => 'bg-indigo-100', 'text' => 'text-indigo-800', 'icon' => '🧺', 'label' => 'Diproses'],
+                                'finished' => ['bg' => 'bg-green-100', 'text' => 'text-green-800', 'icon' => '✅', 'label' => 'Selesai Dicuci'],
+                                'delivered' => ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'icon' => '📦', 'label' => 'Dikirim'],
+                                'completed' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'icon' => '🎉', 'label' => 'Selesai'],
                             ];
-                            $config = $statusConfig[$order->status] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'icon' => '•'];
+                            $config = $statusConfig[$order->status] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800', 'icon' => '•', 'label' => ucfirst($order->status)];
                         @endphp
                         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ $config['bg'] }} {{ $config['text'] }}">
                             <span class="mr-1">{{ $config['icon'] }}</span>
-                            {{ ucfirst($order->status) }}
+                            {{ $config['label'] }}
                         </span>
                     </td>
                     <td class="px-6 py-4">

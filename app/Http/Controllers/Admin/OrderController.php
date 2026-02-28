@@ -102,20 +102,6 @@ class OrderController extends Controller
                 'description' => 'Status updated to ' . ucfirst($nextStatus) . ' by Admin',
             ]);
 
-            // Point System: tambah poin saat order selesai (finished)
-            if ($nextStatus === 'finished') {
-                $points = floor($order->total_price / 1000);
-                if ($points > 0 && $order->user) {
-                    $order->user->increment('points', $points);
-
-                    OrderTracking::create([
-                        'order_id'    => $order->id,
-                        'status'      => 'point_added',
-                        'description' => "Customer earned {$points} points from spending Rp " . number_format($order->total_price, 0, ',', '.'),
-                    ]);
-                }
-            }
-
             DB::commit();
             return back()->with('success', 'Status order berhasil diupdate ke ' . ucfirst($nextStatus) . '!');
         } catch (\Exception $e) {

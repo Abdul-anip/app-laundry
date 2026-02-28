@@ -200,6 +200,23 @@ class OrderController extends Controller
                 'description' => 'Order received and confirmed by customer',
             ]);
 
+            // Award Points safely (Idempotent)
+            $points = floor($order->total_price / 1000);
+            if ($points > 0 && $order->user) {
+                $alreadyAwarded = \App\Models\OrderTracking::where('order_id', $order->id)
+                    ->where('status', 'point_added')
+                    ->exists();
+
+                if (!$alreadyAwarded) {
+                    $order->user->increment('points', $points);
+                    \App\Models\OrderTracking::create([
+                        'order_id'    => $order->id,
+                        'status'      => 'point_added',
+                        'description' => "Customer earned {$points} points from spending Rp " . number_format($order->total_price, 0, ',', '.'),
+                    ]);
+                }
+            }
+
             try {
                 $admins = \App\Models\User::where('role', 'admin')->get();
                 \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\SystemAlertNotification(

@@ -30,7 +30,7 @@
                 <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
             </div>
             <div>
-                <p class="text-xs text-gray-500">Total Orders</p>
+                <p class="text-xs text-gray-500">Total Pesanan</p>
                 <p class="text-2xl font-bold text-gray-800 leading-tight">{{ $monthlyOrders }}</p>
                 <p class="text-xs text-blue-600 font-medium">Bulan ini</p>
             </div>
@@ -44,7 +44,7 @@
                 <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
             </div>
             <div>
-                <p class="text-xs text-gray-500">Customer Baru</p>
+                <p class="text-xs text-gray-500">Pelanggan Baru</p>
                 <p class="text-2xl font-bold text-gray-800 leading-tight">{{ $newCustomers }}</p>
                 <p class="text-xs text-purple-600 font-medium">Bulan ini</p>
             </div>
@@ -58,7 +58,7 @@
                 <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <div>
-                <p class="text-xs text-gray-500">Active Orders</p>
+                <p class="text-xs text-gray-500">Pesanan Aktif</p>
                 <p class="text-2xl font-bold text-gray-800 leading-tight">{{ $activeOrders }}</p>
                 <p class="text-xs text-orange-600 font-medium">Sekarang</p>
             </div>
@@ -86,8 +86,8 @@
     {{-- Order Status Donut --}}
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <div class="mb-4">
-            <h3 class="text-sm font-bold text-gray-800">Status Orders</h3>
-            <p class="text-xs text-gray-500">Semua order</p>
+            <h3 class="text-sm font-bold text-gray-800">Status Pesanan</h3>
+            <p class="text-xs text-gray-500">Semua pesanan</p>
         </div>
         <div class="h-44 flex items-center justify-center">
             <canvas id="statusChart"></canvas>
@@ -99,12 +99,17 @@
                     'process' => 'bg-indigo-400', 'finished' => 'bg-green-400',
                     'delivered' => 'bg-teal-400',  'completed' => 'bg-gray-400',
                 ];
+                $statusLabels = [
+                    'pending' => 'Menunggu', 'pickup' => 'Penjemputan',
+                    'process' => 'Diproses', 'finished' => 'Selesai Dicuci',
+                    'delivered' => 'Dikirim',  'completed' => 'Selesai',
+                ];
             @endphp
             @foreach($statusCounts as $status => $count)
             <div class="flex items-center justify-between text-xs">
                 <div class="flex items-center gap-2">
                     <div class="w-2.5 h-2.5 rounded-full {{ $statusColors[$status] ?? 'bg-gray-300' }}"></div>
-                    <span class="capitalize text-gray-600">{{ $status }}</span>
+                    <span class="capitalize text-gray-600">{{ $statusLabels[$status] ?? $status }}</span>
                 </div>
                 <span class="font-semibold text-gray-800">{{ $count }}</span>
             </div>
@@ -117,8 +122,8 @@
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
     <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
         <div>
-            <h3 class="text-sm font-bold text-gray-800">Order Terbaru</h3>
-            <p class="text-xs text-gray-500">6 order paling baru</p>
+            <h3 class="text-sm font-bold text-gray-800">Pesanan Terbaru</h3>
+            <p class="text-xs text-gray-500">6 pesanan paling baru</p>
         </div>
         <a href="{{ route('admin.orders.index') }}" class="text-primary-600 hover:text-primary-700 text-xs font-medium">Lihat Semua →</a>
     </div>

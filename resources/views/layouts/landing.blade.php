@@ -44,17 +44,17 @@
                 
                 <!-- Nav Links -->
                 <div class="hidden md:flex items-center gap-8">
-                    <a href="#services" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Services</a>
-                    <a href="#how-it-works" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">How It Works</a>
-                    <a href="{{ route('tracking.index') }}" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Track Order</a>
+                    <a href="#services" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Layanan</a>
+                    <a href="#how-it-works" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Cara Kerja</a>
+                    <a href="{{ route('tracking.index') }}" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Lacak Pesanan</a>
                     @auth
-                        <a href="{{ route('customer.dashboard') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
+                        <a href="{{ route('customer.dashboard') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
                             Dashboard
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Login</a>
-                        <a href="{{ route('register') }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
-                            Get Started
+                        <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Masuk</a>
+                        <a href="{{ route('register') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
+                            Mulai Daftar
                         </a>
                     @endauth
                 </div>
@@ -71,14 +71,14 @@
         <!-- Mobile Menu -->
         <div id="mobileMenu" class="hidden md:hidden border-t border-gray-200 bg-white">
             <div class="px-4 py-3 space-y-2">
-                <a href="#services" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Services</a>
-                <a href="#how-it-works" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">How It Works</a>
-                <a href="{{ route('tracking.index') }}" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Track Order</a>
+                <a href="#services" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Layanan</a>
+                <a href="#how-it-works" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Cara Kerja</a>
+                <a href="{{ route('tracking.index') }}" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Lacak Pesanan</a>
                 @auth
                     <a href="{{ route('customer.dashboard') }}" class="block px-3 py-2 rounded-lg bg-blue-600 text-white text-center font-medium">Dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Login</a>
-                    <a href="{{ route('register') }}" class="block px-3 py-2 rounded-lg bg-blue-600 text-white text-center font-medium">Get Started</a>
+                    <a href="{{ route('login') }}" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Masuk</a>
+                    <a href="{{ route('register') }}" class="block px-3 py-2 rounded-lg bg-blue-600 text-white text-center font-medium">Mulai Daftar</a>
                 @endauth
             </div>
         </div>
@@ -96,26 +96,26 @@
                         <span class="text-xl font-black text-white">VIP Laundry</span>
                     </div>
                     <p class="text-sm text-gray-400 leading-relaxed">
-                        {{ \App\Models\Setting::get('footer_company_description', 'Your premium laundry service partner. Fast, clean, and fragrant - every single time.') }}
+                        {{ \App\Models\Setting::get('footer_company_description', 'Mitra layanan laundry premium Anda. Cepat, bersih, dan harum - setiap saat.') }}
                     </p>
                 </div>
                 
                 <div>
-                    <h3 class="text-white font-bold mb-4">Quick Links</h3>
+                    <h3 class="text-white font-bold mb-4">Tautan Cepat</h3>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="{{ route('customer.orders.create') }}" class="hover:text-white transition-colors">Order Laundry</a></li>
-                        <li><a href="{{ route('tracking.index') }}" class="hover:text-white transition-colors">Track Order</a></li>
+                        <li><a href="{{ route('customer.orders.create') }}" class="hover:text-white transition-colors">Pesan Laundry</a></li>
+                        <li><a href="{{ route('tracking.index') }}" class="hover:text-white transition-colors">Lacak Pesanan</a></li>
                         @auth
                             <li><a href="{{ route('customer.dashboard') }}" class="hover:text-white transition-colors">Dashboard</a></li>
                         @else
-                            <li><a href="{{ route('login') }}" class="hover:text-white transition-colors">Login</a></li>
-                            <li><a href="{{ route('register') }}" class="hover:text-white transition-colors">Register</a></li>
+                            <li><a href="{{ route('login') }}" class="hover:text-white transition-colors">Masuk</a></li>
+                            <li><a href="{{ route('register') }}" class="hover:text-white transition-colors">Daftar Akun</a></li>
                         @endauth
                     </ul>
                 </div>
                 
                 <div>
-                    <h3 class="text-white font-bold mb-4">Contact Us</h3>
+                    <h3 class="text-white font-bold mb-4">Hubungi Kami</h3>
                     <ul class="space-y-2 text-sm">
                         <li class="flex items-center gap-2">
                             <span>📧</span>

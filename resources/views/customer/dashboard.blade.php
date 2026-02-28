@@ -8,6 +8,18 @@
     <p class="text-gray-600">Kelola pesanan laundry Anda dengan mudah</p>
 </div>
 
+@php
+    // Dictionary Terjemahan Status
+    $statusLabels = [
+        'pending' => 'Menunggu',
+        'pickup' => 'Penjemputan',
+        'process' => 'Diproses',
+        'finished' => 'Selesai Dicuci',
+        'delivered' => 'Dikirim',
+        'completed' => 'Selesai'
+    ];
+@endphp
+
 <!-- Stats Cards -->
 <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-3">
     <!-- Total Orders -->
@@ -39,7 +51,7 @@
             </div>
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-500">Sedang Diproses</p>
-                <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->orders()->whereIn('status', ['pending', 'process'])->count() }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->orders()->whereIn('status', ['pending', 'pickup', 'process'])->count() }}</p>
             </div>
         </div>
     </div>
@@ -56,7 +68,7 @@
             </div>
             <div class="ml-4">
                 <p class="text-sm font-medium text-gray-500">Selesai</p>
-                <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->orders()->where('status', 'delivered')->count() }}</p>
+                <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->orders()->whereIn('status', ['delivered', 'completed'])->count() }}</p>
             </div>
         </div>
     </div>
@@ -64,7 +76,7 @@
 
 <!-- Quick Actions -->
 <div class="mb-6">
-    <h2 class="mb-4 text-lg font-semibold text-gray-900">Quick Actions</h2>
+    <h2 class="mb-4 text-lg font-semibold text-gray-900">Aksi Cepat</h2>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <!-- New Order -->
         <a href="{{ route('customer.orders.create') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
@@ -123,7 +135,7 @@
             <table class="w-full text-sm text-left text-gray-500">
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                     <tr>
-                        <th scope="col" class="px-6 py-3">Order Code</th>
+                        <th scope="col" class="px-6 py-3">Kode Pesanan</th>
                         <th scope="col" class="px-6 py-3">Tanggal</th>
                         <th scope="col" class="px-6 py-3">Total</th>
                         <th scope="col" class="px-6 py-3">Status</th>
@@ -146,13 +158,15 @@
                             @php
                                 $statusColors = [
                                     'pending' => 'bg-yellow-100 text-yellow-800',
+                                    'pickup' => 'bg-blue-100 text-blue-800',
                                     'process' => 'bg-blue-100 text-blue-800',
                                     'finished' => 'bg-green-100 text-green-800',
-                                    'delivered' => 'bg-gray-100 text-gray-800',
+                                    'delivered' => 'bg-indigo-100 text-indigo-800',
+                                    'completed' => 'bg-gray-800 text-white',
                                 ];
                             @endphp
                             <span class="px-2.5 py-0.5 rounded text-xs font-medium {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                {{ ucfirst($order->status) }}
+                                {{ $statusLabels[$order->status] ?? ucfirst($order->status) }}
                             </span>
                         </td>
                         <td class="px-6 py-4">

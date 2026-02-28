@@ -169,13 +169,13 @@
                     <div class="company-subtitle">Premium Care for Your Best Wear</div>
                 </td>
                 <td style="border:none; padding:0; vertical-align:top;" align="right">
-                    <h1 class="invoice-title">INVOICE</h1>
+                    <h1 class="invoice-title">FAKTUR</h1>
                     <div class="invoice-number">#{{ $order->order_code }}</div>
                     <div style="margin-top: 10px;">
                         @if($order->payment_status == 'paid')
-                            <span class="status-badge status-paid" style="border: 1px solid #ffffff;">PAID</span>
+                            <span class="status-badge status-paid" style="border: 1px solid #ffffff;">LUNAS</span>
                         @else
-                            <span class="status-badge status-unpaid" style="border: 1px solid #ffffff;">UNPAID</span>
+                            <span class="status-badge status-unpaid" style="border: 1px solid #ffffff;">BELUM LUNAS</span>
                         @endif
                     </div>
                 </td>
@@ -186,22 +186,22 @@
     <div class="content">
         <div class="box-container">
             <div class="box">
-                <div class="label">BILLED TO</div>
+                <div class="label">DITAGIHKAN KEPADA</div>
                 <div class="value">{{ $order->customer_name }}</div>
                 <div class="value-light">{{ $order->phone }}</div>
                 <div class="value-light" style="margin-top:5px; max-width: 80%;">{{ $order->address }}</div>
             </div>
             
             <div class="box-right">
-                <div class="label">DATE ISSUED</div>
+                <div class="label">TANGGAL</div>
                 <div class="value">{{ $order->created_at->format('d M Y') }}</div>
                 <div class="value-light">{{ $order->created_at->format('H:i') }} WIB</div>
                 
-                <div class="label" style="margin-top: 15px;">SERVICE TYPE</div>
+                <div class="label" style="margin-top: 15px;">TIPE LAYANAN</div>
                 <div class="value">
-                    @if($order->service) Regular Service
-                    @elseif($order->bundle) Bundle Package
-                    @else Custom Order @endif
+                    @if($order->service) Layanan Kiloan/Satuan
+                    @elseif($order->bundle) Layanan Paket/Bundle
+                    @else Layanan Custom @endif
                 </div>
             </div>
         </div>
@@ -209,9 +209,9 @@
         <table>
             <thead>
                 <tr>
-                    <th width="40%">DESCRIPTION</th>
-                    <th width="20%" class="text-center">QTY / WEIGHT</th>
-                    <th width="20%" class="text-right">PRICE</th>
+                    <th width="40%">DESKRIPSI</th>
+                    <th width="20%" class="text-center">QTY / BERAT</th>
+                    <th width="20%" class="text-right">HARGA</th>
                     <th width="20%" class="text-right">TOTAL</th>
                 </tr>
             </thead>
@@ -221,10 +221,10 @@
                         <div style="font-weight:bold; color: #1e293b;">
                             @if($order->service) {{ $order->service->name }}
                             @elseif($order->bundle) {{ $order->bundle->name }}
-                            @else Custom Service @endif
+                            @else Layanan Custom @endif
                         </div>
                         <div style="font-size: 12px; color: #64748b; margin-top: 4px;">
-                            {{ $order->fabric_type ? 'Type: ' . $order->fabric_type : 'Standard Wash & Fold' }}
+                            {{ $order->fabric_type ? 'Bahan: ' . $order->fabric_type : 'Cuci & Lipat Standar' }}
                         </div>
                     </td>
                     <td class="text-center">
@@ -254,14 +254,14 @@
                 
                 @if($order->pickup_fee > 0)
                 <tr class="total-row">
-                    <td class="text-right" style="color: #64748b;">Pickup Fee ({{ floatval($order->distance_km) }} km)</td>
+                    <td class="text-right" style="color: #64748b;">Ongkos Kirim ({{ floatval($order->distance_km) }} km)</td>
                     <td class="text-right" style="font-weight: bold;">Rp {{ number_format($order->pickup_fee, 0, ',', '.') }}</td>
                 </tr>
                 @endif
                 
                 @if($order->discount > 0)
                 <tr class="total-row">
-                    <td class="text-right" style="color: #059669;">Discount {{ $order->promo ? '('.$order->promo->code.')' : '' }}</td>
+                    <td class="text-right" style="color: #059669;">Diskon Promo {{ $order->promo ? '('.$order->promo->code.')' : '' }}</td>
                     <td class="text-right" style="color: #059669; font-weight: bold;">- Rp {{ number_format($order->discount, 0, ',', '.') }}</td>
                 </tr>
                 @endif
@@ -270,7 +270,7 @@
                     <td colspan="2" style="padding: 10px 0;"></td>
                 </tr>
                 <tr class="total-row">
-                    <td class="text-right" style="vertical-align: middle; font-weight: bold; font-size: 14px; padding-right: 15px;">GRAND TOTAL</td>
+                    <td class="text-right" style="vertical-align: middle; font-weight: bold; font-size: 14px; padding-right: 15px;">TOTAL PEMBAYARAN</td>
                     <td class="grand-total text-right">Rp {{ number_format($order->total_price, 0, ',', '.') }}</td>
                 </tr>
             </table>
@@ -279,9 +279,9 @@
         <div style="clear: both;"></div>
 
         <div class="footer">
-            <p>Thank you for your business!</p>
+            <p>Terima kasih telah mempercayakan cucian Anda kepada kami!</p>
             <p style="margin-top: 5px;">
-                <strong>VIP Laundry</strong> | Jl. Raya Laundry No. 123 | 0812-3456-7890 | support@viplaundry.com
+                <strong>VIP Laundry</strong> | {{ \App\Models\Setting::get('footer_address', 'Jl. Raya Laundry No. 123') }} | {{ \App\Models\Setting::get('footer_phone', '0812-3456-7890') }}
             </p>
         </div>
     </div>

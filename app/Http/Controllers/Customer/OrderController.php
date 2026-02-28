@@ -126,14 +126,12 @@ class OrderController extends Controller
 
             // Notifikasi admin
             try {
-                \App\Helpers\FilamentNotificationHelper::notifyAdmins(
+                $admins = \App\Models\User::where('role', 'admin')->get();
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\SystemAlertNotification(
                     title: 'Pesanan Baru Masuk! 🆕',
                     body: "Pesanan {$order->order_code} dari {$order->customer_name} perlu diproses.",
-                    icon: 'heroicon-o-shopping-bag',
-                    iconColor: 'info',
-                    actionUrl: route('admin.orders.show', $order),
-                    actionLabel: 'View Order'
-                );
+                    url: route('admin.orders.show', $order)
+                ));
             } catch (\Exception $notifEx) {
                 Log::warning('Admin notification failed: ' . $notifEx->getMessage());
             }
@@ -203,14 +201,12 @@ class OrderController extends Controller
             ]);
 
             try {
-                \App\Helpers\FilamentNotificationHelper::notifyAdmins(
+                $admins = \App\Models\User::where('role', 'admin')->get();
+                \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\SystemAlertNotification(
                     title: 'Order Completed ✅',
                     body: "Customer {$order->customer_name} telah mengkonfirmasi penerimaan order {$order->order_code}.",
-                    icon: 'heroicon-o-check-circle',
-                    iconColor: 'success',
-                    actionUrl: route('admin.orders.show', $order),
-                    actionLabel: 'View Order'
-                );
+                    url: route('admin.orders.show', $order)
+                ));
             } catch (\Exception $notifEx) {
                 Log::warning('Admin notification failed: ' . $notifEx->getMessage());
             }

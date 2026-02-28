@@ -45,14 +45,12 @@ class ReviewController extends Controller
             : $review->comment;
             
         try {
-            \App\Helpers\FilamentNotificationHelper::notifyAdmins(
+            $admins = \App\Models\User::where('role', 'admin')->get();
+            \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\SystemAlertNotification(
                 title: "Review Baru Diterima {$stars}",
                 body: $commentSnippet,
-                icon: 'heroicon-o-star',
-                iconColor: 'info',
-                actionUrl: route('admin.reviews.index'),
-                actionLabel: 'View Reviews'
-            );
+                url: route('admin.reviews.index')
+            ));
         } catch (\Exception $notifEx) {
             \Illuminate\Support\Facades\Log::warning('Review notification failed: ' . $notifEx->getMessage());
         }

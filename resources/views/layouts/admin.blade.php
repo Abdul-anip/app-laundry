@@ -184,6 +184,81 @@
             </div>
 
             <div class="flex items-center gap-2">
+                {{-- Notification Bell --}}
+                @php 
+                    $unreadCount = auth()->user()->unreadNotifications->count(); 
+                    $initialNotifs = auth()->user()->notifications()->latest()->take(10)->get()->map(function($notif) {
+                        // Laravel native notifications can sometimes be cast to array directly depending on model
+                        $data = is_string($notif->data) ? json_decode($notif->data, true) : $notif->data;
+                        return [
+                            'id' => $notif->id,
+                            'title' => $data['title'] ?? 'Notifikasi',
+                            'body' => $data['body'] ?? '',
+                            'url' => $data['url'] ?? route('admin.notifications.read', $notif->id),
+                            'read_at' => $notif->read_at,
+                            'created_at_human' => $notif->created_at->diffForHumans()
+                        ];
+                    });
+                @endphp
+                <div x-data="notificationComponent()" x-init="init()" @click.outside="open = false" class="relative">
+                    <button @click="open = !open"
+                            class="relative p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                        
+                        <span x-show="unreadCount > 0" x-cloak class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                            <span x-text="unreadCount > 9 ? '9+' : unreadCount"></span>
+                        </span>
+                    </button>
+
+                    {{-- Dropdown --}}
+                    <div x-show="open" x-cloak x-transition
+                         class="absolute right-0 top-full mt-2 w-80 bg-white border border-gray-200 rounded-2xl shadow-xl z-50 overflow-hidden">
+
+                        {{-- Header --}}
+                        <div class="flex items-center justify-between px-4 py-3 border-b border-gray-100">
+                            <p class="text-sm font-bold text-gray-800">Notifikasi</p>
+                            
+                            <form x-show="unreadCount > 0" method="POST" action="{{ route('admin.notifications.read-all') }}">
+                                @csrf
+                                <button type="submit" class="text-xs text-primary-600 hover:text-primary-800 font-medium transition-colors">
+                                    Tandai semua dibaca
+                                </button>
+                            </form>
+                        </div>
+
+                        {{-- List --}}
+                        <div class="max-h-80 overflow-y-auto divide-y divide-gray-50">
+                            
+                            <template x-for="notif in notifications" :key="notif.id">
+                                <a :href="notif.url"
+                                   :class="notif.read_at ? '' : 'bg-blue-50/40'"
+                                   class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors">
+                                    {{-- Icon dot --}}
+                                    <div class="mt-0.5 shrink-0">
+                                        <div class="w-2 h-2 rounded-full mt-1.5" :class="notif.read_at ? 'bg-gray-300' : 'bg-primary-500'"></div>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-800 leading-snug" x-text="notif.title"></p>
+                                        <p class="text-xs text-gray-500 mt-0.5 line-clamp-2" x-text="notif.body"></p>
+                                        <p class="text-xs text-gray-400 mt-1" x-text="notif.created_at_human"></p>
+                                    </div>
+                                </a>
+                            </template>
+                            
+                            <div x-show="notifications.length === 0" class="px-4 py-8 text-center text-gray-400">
+                                <svg class="w-10 h-10 mx-auto mb-2 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                                <p class="text-sm">Tidak ada notifikasi</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <a href="{{ route('admin.pos') }}"
                    class="hidden sm:inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -198,7 +273,31 @@
     </header>
 
     <!-- Flash Messages -->
-    <div class="px-4 sm:px-6 pt-4">
+    <div class="fixed top-4 right-4 z-50 flex flex-col gap-3 pointer-events-none" style="min-width: 320px; max-width: 400px;">
+        
+        <!-- Alpine Dynamic Toasts -->
+        <div x-data="{ toasts: [] }" @notify.window="toasts.push({id: Date.now(), msg: $event.detail.msg}); setTimeout(() => toasts.shift(), 5000)" class="flex flex-col gap-3">
+            <template x-for="toast in toasts" :key="toast.id">
+                <div x-show="true" 
+                     x-transition:enter="transition ease-out duration-300 transform"
+                     x-transition:enter-start="opacity-0 translate-y-2 sm:translate-y-0 sm:translate-x-4"
+                     x-transition:enter-end="opacity-100 translate-y-0 sm:translate-x-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100"
+                     x-transition:leave-end="opacity-0"
+                     class="pointer-events-auto flex items-center gap-3 bg-white border border-gray-100 shadow-xl rounded-xl p-4 overflow-hidden relative">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
+                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
+                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-gray-900">Info Baru!</p>
+                        <p class="text-sm text-gray-500 truncate" x-text="toast.msg"></p>
+                    </div>
+                </div>
+            </template>
+        </div>
+
         @if (session('success'))
             <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)"
                  class="flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-xl mb-4">
@@ -235,5 +334,51 @@
 </div>
 
 @stack('scripts')
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('notificationComponent', () => ({
+            open: false,
+            unreadCount: {{ auth()->user()->unreadNotifications->count() }},
+            notifications: @json($initialNotifs),
+            
+            init() {
+                // Polling setiap 10 detik
+                setInterval(() => {
+                    this.fetchNotifications();
+                }, 10000);
+            },
+            
+            async fetchNotifications() {
+                try {
+                    const response = await fetch('{{ route('admin.notifications.fetch') }}');
+                    if (response.ok) {
+                        const data = await response.json();
+                        
+                        if (data.unreadCount > this.unreadCount) { 
+                           try {
+                               // Suara 'ding' notifikasi yang subtle
+                               let audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                               audio.volume = 0.5;
+                               audio.play();
+                           } catch (e) {
+                               console.log('Audio autoplay prevented by browser');
+                           }
+                           
+                           // Trigger toast notification
+                           window.dispatchEvent(new CustomEvent('notify', {
+                               detail: { msg: 'Anda mendapatkan pesanan atau pembaruan baru!' }
+                           }));
+                        }
+                        
+                        this.unreadCount = data.unreadCount;
+                        this.notifications = data.notifications;
+                    }
+                } catch (error) {
+                    console.error('Failed to fetch notifications', error);
+                }
+            }
+        }));
+    });
+</script>
 </body>
 </html>

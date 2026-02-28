@@ -34,30 +34,7 @@
                 </div>
             </div>
             
-            <!-- Right - Illustration/Stats -->
-            <div class="hidden lg:block">
-                <div class="relative">
-                    <!-- Stats Cards -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-                            <div class="text-4xl font-black text-white mb-2">500+</div>
-                            <div class="text-blue-100">Happy Customers</div>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-                            <div class="text-4xl font-black text-white mb-2">1000+</div>
-                            <div class="text-blue-100">Orders Completed</div>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-                            <div class="text-4xl font-black text-white mb-2">24/7</div>
-                            <div class="text-blue-100">Service Available</div>
-                        </div>
-                        <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
-                            <div class="text-4xl font-black text-white mb-2">⭐ 4.9</div>
-                            <div class="text-blue-100">Average Rating</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
     

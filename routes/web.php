@@ -13,10 +13,6 @@ Route::get('/', function () {
     return view('welcome', compact('services'));
 });
 
-// Public Tracking Routes
-Route::get('/tracking', [App\Http\Controllers\TrackingController::class, 'index'])->name('tracking.index');
-Route::post('/tracking', [App\Http\Controllers\TrackingController::class, 'search'])->name('tracking.search');
-
 /*
 |--------------------------------------------------------------------------
 | Dashboard Redirect (After Login)
@@ -110,6 +106,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/customer/dashboard', function () {
         return view('customer.dashboard');
     })->name('customer.dashboard');
+
+    Route::get('/customer/tracking', [\App\Http\Controllers\Customer\TrackingController::class, 'index'])->name('customer.tracking.index');
+    Route::post('/customer/tracking', [\App\Http\Controllers\Customer\TrackingController::class, 'search'])->name('customer.tracking.search');
 
     Route::resource('customer/orders', \App\Http\Controllers\Customer\OrderController::class)
         ->names('customer.orders')

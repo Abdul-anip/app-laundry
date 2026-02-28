@@ -35,7 +35,7 @@
     
     .toggle-btn { transition: all 0.2s; }
     .toggle-btn.active {
-        background-color: rgb(251 191 36); /* amber-400 */
+        background-color: rgb(251 191 36); /* primary-400 */
         color: #fff;
         border-color: rgb(245 158 11);
     }
@@ -133,7 +133,7 @@
                     <div class="sm:col-span-6">
                         <label for="customer_search" class="block text-sm font-medium leading-6 text-gray-900">Cari Pelanggan</label>
                         <div class="mt-2">
-                            <select id="customer_search" class="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-amber-600 sm:text-sm sm:leading-6">
+                            <select id="customer_search" class="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                                 <option value="">-- Ketik nama/HP atau pilih input manual --</option>
                             </select>
                         </div>
@@ -147,13 +147,13 @@
                         <div>
                             <label for="customer_name" class="block text-sm font-medium leading-6 text-gray-900">Nama Lengkap</label>
                             <div class="mt-2">
-                                <input type="text" name="customer_name" id="customer_name" class="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-600 sm:text-sm sm:leading-6" required placeholder="Nama Pelanggan">
+                                <input type="text" name="customer_name" id="customer_name" class="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" required placeholder="Nama Pelanggan">
                             </div>
                         </div>
                         <div>
                             <label for="phone" class="block text-sm font-medium leading-6 text-gray-900">Nomor Telepon (WhatsApp)</label>
                             <div class="mt-2">
-                                <input type="tel" name="phone" id="phone" class="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-600 sm:text-sm sm:leading-6" required placeholder="08...">
+                                <input type="tel" name="phone" id="phone" class="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" required placeholder="08...">
                             </div>
                         </div>
                     </div>
@@ -169,10 +169,10 @@
                     <div>
                         <label class="block text-sm font-medium leading-6 text-gray-900 mb-2">Jenis Layanan</label>
                         <div class="grid grid-cols-2 gap-2 bg-gray-100 p-1 rounded-lg">
-                            <button type="button" onclick="switchType('service')" class="toggle-btn active w-full rounded-md py-2 text-sm font-semibold text-gray-900 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 ring-1 ring-inset ring-gray-300 bg-white hover:bg-gray-50">
+                            <button type="button" onclick="switchType('service')" class="toggle-btn active w-full rounded-md py-2 text-sm font-semibold text-gray-900 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 ring-1 ring-inset ring-gray-300 bg-white hover:bg-gray-50">
                                 Kiloan / Satuan
                             </button>
-                            <button type="button" onclick="switchType('bundle')" class="toggle-btn w-full rounded-md py-2 text-sm font-semibold text-gray-900 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 ring-1 ring-inset ring-gray-300 bg-white hover:bg-gray-50">
+                            <button type="button" onclick="switchType('bundle')" class="toggle-btn w-full rounded-md py-2 text-sm font-semibold text-gray-900 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 ring-1 ring-inset ring-gray-300 bg-white hover:bg-gray-50">
                                 Bundling
                             </button>
                         </div>
@@ -182,7 +182,7 @@
                     <!-- Services Grid -->
                     <div id="service_section" class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto p-1">
                         @foreach($services as $service)
-                            <div onclick="selectService({{ $service->id }})" class="service-card cursor-pointer relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-amber-500 hover:border-amber-400 hover:bg-amber-50 transition-all">
+                            <div onclick="selectService(event, {{ $service->id }})" class="service-card cursor-pointer relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-primary-500 hover:border-primary-400 hover:bg-primary-50 transition-all">
                                 <div class="min-w-0 flex-1">
                                     <span class="absolute inset-0" aria-hidden="true"></span>
                                     <p class="text-sm font-medium text-gray-900">{{ $service->name }}</p>
@@ -197,14 +197,14 @@
                     <div id="weight_input_group" class="mt-4">
                         <label for="weight_kg" class="block text-sm font-medium leading-6 text-gray-900">Total Berat (Kg/Pcs)</label>
                         <div class="mt-2">
-                            <input type="number" name="weight_kg" id="weight_kg" step="0.1" min="0.1" class="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-600 sm:text-sm sm:leading-6" placeholder="0.0">
+                            <input type="number" name="weight_kg" id="weight_kg" step="0.1" min="0.1" class="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" placeholder="0.0">
                         </div>
                     </div>
 
                     <!-- Bundles Grid (Hidden by default) -->
                     <div id="bundle_section" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[300px] overflow-y-auto p-1">
                         @foreach($bundles as $bundle)
-                            <div onclick="selectBundle({{ $bundle->id }})" class="service-card cursor-pointer relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-amber-500 hover:border-amber-400 hover:bg-amber-50 transition-all">
+                            <div onclick="selectBundle(event, {{ $bundle->id }})" class="service-card cursor-pointer relative flex items-center space-x-3 rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm focus-within:ring-2 focus-within:ring-primary-500 hover:border-primary-400 hover:bg-primary-50 transition-all">
                                 <div class="min-w-0 flex-1">
                                     <span class="absolute inset-0" aria-hidden="true"></span>
                                     <p class="text-sm font-medium text-gray-900">{{ $bundle->name }}</p>
@@ -227,10 +227,10 @@
                 <div class="mb-6">
                     <label class="block text-sm font-medium leading-6 text-gray-900 mb-2">Metode Pembayaran</label>
                     <div class="grid grid-cols-2 gap-3">
-                        <div onclick="selectPayment('cash')" class="payment-card cursor-pointer rounded-lg border border-gray-300 p-3 text-center hover:border-amber-500 hover:bg-amber-50 active-payment ring-2 ring-amber-600 bg-amber-50">
+                        <div onclick="selectPayment(event, 'cash')" class="payment-card cursor-pointer rounded-lg border border-gray-300 p-3 text-center hover:border-primary-500 hover:bg-primary-50 active-payment ring-2 ring-primary-600 bg-primary-50">
                             <span class="block text-sm font-medium text-gray-900">Tunai</span>
                         </div>
-                        <div onclick="selectPayment('transfer')" class="payment-card cursor-pointer rounded-lg border border-gray-300 p-3 text-center hover:border-amber-500 hover:bg-amber-50">
+                        <div onclick="selectPayment(event, 'transfer')" class="payment-card cursor-pointer rounded-lg border border-gray-300 p-3 text-center hover:border-primary-500 hover:bg-primary-50">
                             <span class="block text-sm font-medium text-gray-900">Transfer / QRIS</span>
                         </div>
                     </div>
@@ -240,17 +240,24 @@
                 <!-- Promo Code -->
                 <div class="mb-6">
                     <label for="promo_code" class="block text-sm font-medium leading-6 text-gray-900">Kode Promo (Opsional)</label>
-                    <div class="mt-2">
-                        <input type="text" name="promo_code" id="promo_code" class="block w-full rounded-lg border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-600 sm:text-sm sm:leading-6" placeholder="Masukkan kode promo">
+                    <div class="mt-2 flex rounded-md shadow-sm">
+                        <div class="relative flex flex-grow items-stretch focus-within:z-10">
+                            <input type="text" name="promo_code" id="promo_code" class="block w-full rounded-none rounded-l-lg border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6 uppercase" placeholder="KODE PROMO">
+                        </div>
+                        <button type="button" onclick="checkPromo()" class="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-lg px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                            Cek
+                        </button>
                     </div>
+                    <p id="promo_message" class="mt-2 text-sm hidden"></p>
                 </div>
                 
                 <div class="rounded-lg bg-gray-50 p-4 ring-1 ring-gray-900/5 mb-6">
                     <h3 class="text-sm font-medium text-gray-900 mb-2">Ringkasan</h3>
                     <p class="text-xs text-gray-500">Harga final akan dihitung setelah pesanan dibuat.</p>
+                    <div id="promo_summary" class="mt-2 text-sm font-medium text-green-600 hidden"></div>
                 </div>
 
-                <button type="submit" class="w-full rounded-lg bg-amber-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-amber-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600">
+                <button type="submit" class="w-full rounded-lg bg-primary-600 px-3.5 py-2.5 text-center text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600">
                     Buat Pesanan
                 </button>
             </div>
@@ -351,7 +358,7 @@
         $('#order_type').val(type);
         const btns = document.querySelectorAll('.toggle-btn');
         btns.forEach(b => {
-             b.classList.remove('active', 'bg-amber-400', 'text-white', 'border-amber-500'); 
+             b.classList.remove('active', 'bg-primary-400', 'text-white', 'border-primary-500'); 
              b.classList.add('bg-white', 'text-gray-900', 'border-gray-300');
         });
         
@@ -359,35 +366,70 @@
             $('#service_section').removeClass('hidden');
             $('#weight_input_group').removeClass('hidden');
             $('#bundle_section').addClass('hidden');
-            btns[0].classList.add('active', 'bg-amber-400', 'text-white', 'border-amber-500');
+            btns[0].classList.add('active', 'bg-primary-400', 'text-white', 'border-primary-500');
             btns[0].classList.remove('bg-white', 'text-gray-900');
         } else {
             $('#service_section').addClass('hidden');
             $('#weight_input_group').addClass('hidden');
             $('#bundle_section').removeClass('hidden');
-            btns[1].classList.add('active', 'bg-amber-400', 'text-white', 'border-amber-500');
+            btns[1].classList.add('active', 'bg-primary-400', 'text-white', 'border-primary-500');
             btns[1].classList.remove('bg-white', 'text-gray-900');
         }
     }
 
-    function selectService(id) {
+    function selectService(e, id) {
         $('#service_id').val(id);
-        $('.service-card').removeClass('ring-2 ring-amber-500 border-amber-500 bg-amber-50');
-        $(event.currentTarget).addClass('ring-2 ring-amber-500 border-amber-500 bg-amber-50');
+        $('.service-card').removeClass('ring-2 ring-primary-500 border-primary-500 bg-primary-50');
+        $(e.currentTarget).addClass('ring-2 ring-primary-500 border-primary-500 bg-primary-50');
     }
 
-    function selectBundle(id) {
+    function selectBundle(e, id) {
         $('#bundle_id').val(id);
-        $('.service-card').removeClass('ring-2 ring-amber-500 border-amber-500 bg-amber-50');
-        $(event.currentTarget).addClass('ring-2 ring-amber-500 border-amber-500 bg-amber-50');
+        $('.service-card').removeClass('ring-2 ring-primary-500 border-primary-500 bg-primary-50');
+        $(e.currentTarget).addClass('ring-2 ring-primary-500 border-primary-500 bg-primary-50');
     }
 
-    function selectPayment(method) {
+    function selectPayment(e, method) {
         $('#payment_method').val(method);
-        $('.payment-card').removeClass('active-payment ring-2 ring-amber-600 bg-amber-50').addClass('border-gray-300');
-        $(event.currentTarget).removeClass('border-gray-300').addClass('active-payment ring-2 ring-amber-600 bg-amber-50');
+        $('.payment-card').removeClass('active-payment ring-2 ring-primary-600 bg-primary-50').addClass('border-gray-300');
+        $(e.currentTarget).removeClass('border-gray-300').addClass('active-payment ring-2 ring-primary-600 bg-primary-50');
     }
     
+    function checkPromo() {
+        const code = $('#promo_code').val().toUpperCase();
+        if(!code) return;
+        
+        const type = $('#order_type').val();
+        let subtotal = 0;
+        
+        // This is a simplified calculation just to check if promo is valid
+        // The real subtotal calculation is too complex to mirror in JS without all pricing data
+        // For the POS UI, we just want to validate the code exists.
+        
+        $.ajax({
+            url: '{{ route("admin.orders.check_promo") }}',
+            data: { code: code, subtotal: 100000 }, // Mock subtotal just for validation
+            success: function(res) {
+                const msg = $('#promo_message');
+                const sum = $('#promo_summary');
+                
+                msg.removeClass('hidden text-red-600 text-green-600');
+                if(res.valid) {
+                    msg.addClass('text-green-600').text('Promo ditemukan dan valid!');
+                    let discountText = res.discount_type === 'percent' ? res.value + '%' : 'Rp ' + res.value.toLocaleString('id-ID');
+                    sum.removeClass('hidden').text('Promo aktif: Diskon ' + discountText);
+                } else {
+                    msg.addClass('text-red-600').text(res.message || 'Promo tidak valid');
+                    sum.addClass('hidden');
+                }
+            },
+            error: function() {
+                $('#promo_message').removeClass('hidden text-green-600').addClass('text-red-600').text('Gagal mengecek promo');
+                $('#promo_summary').addClass('hidden');
+            }
+        });
+    }
+
     // Initial State
     switchType('service');
 </script>

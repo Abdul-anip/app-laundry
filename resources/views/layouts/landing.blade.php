@@ -46,7 +46,7 @@
                 <div class="hidden md:flex items-center gap-8">
                     <a href="#services" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Layanan</a>
                     <a href="#how-it-works" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Cara Kerja</a>
-                    <a href="{{ route('tracking.index') }}" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Lacak Pesanan</a>
+                    <a href="{{ route('customer.tracking.index') }}" class="text-gray-700 hover:text-blue-600 font-medium transition-colors">Lacak Pesanan</a>
                     @auth
                         <a href="{{ route('customer.dashboard') }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all">
                             Dashboard
@@ -73,7 +73,7 @@
             <div class="px-4 py-3 space-y-2">
                 <a href="#services" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Layanan</a>
                 <a href="#how-it-works" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Cara Kerja</a>
-                <a href="{{ route('tracking.index') }}" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Lacak Pesanan</a>
+                <a href="{{ route('customer.tracking.index') }}" class="block px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100">Lacak Pesanan</a>
                 @auth
                     <a href="{{ route('customer.dashboard') }}" class="block px-3 py-2 rounded-lg bg-blue-600 text-white text-center font-medium">Dashboard</a>
                 @else
@@ -104,7 +104,7 @@
                     <h3 class="text-white font-bold mb-4">Tautan Cepat</h3>
                     <ul class="space-y-2 text-sm">
                         <li><a href="{{ route('customer.orders.create') }}" class="hover:text-white transition-colors">Pesan Laundry</a></li>
-                        <li><a href="{{ route('tracking.index') }}" class="hover:text-white transition-colors">Lacak Pesanan</a></li>
+                        <li><a href="{{ route('customer.tracking.index') }}" class="hover:text-white transition-colors">Lacak Pesanan</a></li>
                         @auth
                             <li><a href="{{ route('customer.dashboard') }}" class="hover:text-white transition-colors">Dashboard</a></li>
                         @else

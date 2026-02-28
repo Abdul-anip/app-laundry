@@ -18,13 +18,13 @@
     </style>
     @stack('styles')
 </head>
-<body class="h-full">
+<body class="h-full" x-data="{ sidebarOpen: false, dropdownOpen: false, notifOpen: false }">
 
 <nav class="fixed top-0 z-50 w-full bg-white border-b border-gray-200">
   <div class="px-3 py-3 lg:px-5 lg:pl-3">
     <div class="flex items-center justify-between">
       <div class="flex items-center justify-start rtl:justify-end">
-        <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
+        <button @click="sidebarOpen = !sidebarOpen" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
             <span class="sr-only">Open sidebar</span>
             <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
@@ -36,16 +36,17 @@
       </div>
       <div class="flex items-center">
           <div class="flex items-center ms-3">
-            <!-- Notification Dropdown -->
-            <button type="button" data-dropdown-toggle="notification-dropdown" class="relative p-2 mr-3 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100">
-              <span class="sr-only">View notifications</span>
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
-              @if(auth()->user()->unreadNotifications->count() > 0)
-              <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
-              @endif
-            </button>
-            <!-- Dropdown menu -->
-            <div id="notification-dropdown" class="z-50 hidden my-4 max-w-sm text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-lg">
+<!-- Notification Dropdown -->
+            <div class="relative">
+                <button @click="notifOpen = !notifOpen; dropdownOpen = false" @click.away="notifOpen = false" type="button" class="relative p-2 mr-3 text-gray-500 rounded-lg hover:text-gray-900 hover:bg-gray-100">
+                  <span class="sr-only">View notifications</span>
+                  <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
+                  @if(auth()->user()->unreadNotifications->count() > 0)
+                  <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full"></span>
+                  @endif
+                </button>
+                <!-- Dropdown menu -->
+                <div x-show="notifOpen" style="display: none;" class="absolute right-0 top-full z-50 my-4 w-80 max-w-sm text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow-lg">
                 <div class="block px-4 py-2 text-base font-medium text-center text-gray-700 bg-gray-50">
                     Notifikasi
                 </div>
@@ -64,18 +65,20 @@
                     <div class="px-4 py-3 text-sm text-center text-gray-500">
                       Tidak ada notifikasi baru
                     </div>
-                  @endforelse
+@endforelse
                 </div>
+            </div>
             </div>
             
             <!-- User Dropdown -->
-            <button type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300" data-dropdown-toggle="dropdown-user">
-              <span class="sr-only">Open user menu</span>
-              <div class="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white font-semibold">
-                {{ substr(auth()->user()->name, 0, 1) }}
-              </div>
-            </button>
-            <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow" id="dropdown-user">
+            <div class="relative">
+                <button @click="dropdownOpen = !dropdownOpen; notifOpen = false" @click.away="dropdownOpen = false" type="button" class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300">
+                  <span class="sr-only">Open user menu</span>
+                  <div class="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-white font-semibold">
+                    {{ substr(auth()->user()->name, 0, 1) }}
+                  </div>
+                </button>
+                <div x-show="dropdownOpen" style="display: none;" class="absolute right-0 top-full z-50 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow w-48">
               <div class="px-4 py-3" role="none">
                 <p class="text-sm text-gray-900" role="none">{{ auth()->user()->name }}</p>
                 <p class="text-sm font-medium text-gray-900 truncate" role="none">{{ auth()->user()->email }}</p>
@@ -88,9 +91,10 @@
                   <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Logout</button>
-                  </form>
+</form>
                 </li>
               </ul>
+            </div>
             </div>
           </div>
         </div>
@@ -98,7 +102,7 @@
   </div>
 </nav>
 
-<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0" aria-label="Sidebar">
+<aside id="logo-sidebar" :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform bg-white border-r border-gray-200 sm:translate-x-0" aria-label="Sidebar">
    <div class="h-full px-3 pb-4 overflow-y-auto bg-white">
       <!-- Loyalty Points Card -->
       <div class="mb-4 p-4 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg shadow-lg">
@@ -133,8 +137,8 @@
                <span class="flex-1 ms-3 whitespace-nowrap">Riwayat Pesanan</span>
             </a>
          </li>
-         <li>
-            <a href="{{ route('tracking.index') }}" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group {{ request()->routeIs('tracking.*') ? 'bg-gray-100' : '' }}">
+<li>
+            <a href="{{ route('customer.tracking.index') }}" class="flex items-center p-2 text-gray-900 rounded-lg hover:bg-gray-100 group {{ request()->routeIs('customer.tracking.*') ? 'bg-gray-100' : '' }}">
                <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                   <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z"/>
                </svg>

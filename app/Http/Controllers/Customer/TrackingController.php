@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Customer;
 
+use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -9,7 +10,7 @@ class TrackingController extends Controller
 {
     public function index()
     {
-        return view('tracking');
+        return view('customer.tracking.index');
     }
 
     public function search(Request $request)
@@ -19,11 +20,16 @@ class TrackingController extends Controller
         ]);
 
         $order = Order::where('order_code', $request->order_code)
+            ->where('user_id', auth()->id()) // Ensure they only track their own orders
             ->with(['orderTrackings' => function($query) {
                 $query->orderBy('created_at', 'desc');
             }])
-            ->firstOrFail();
+            ->first();
 
-        return view('tracking', compact('order'));
+        if (!$order) {
+            return back()->withInput()->withErrors(['order_code' => 'Pesanan tidak ditemukan atau bukan milik Anda.']);
+        }
+
+        return view('customer.tracking.index', compact('order'));
     }
 }

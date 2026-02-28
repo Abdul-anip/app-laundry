@@ -106,7 +106,7 @@
         </a>
 
         <!-- Track Order -->
-        <a href="{{ route('tracking.index') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
+        <a href="{{ route('customer.tracking.index') }}" class="block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50 transition">
             <div class="flex items-center mb-2">
                 <div class="flex items-center justify-center w-10 h-10 bg-green-100 rounded-lg">
                     <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">

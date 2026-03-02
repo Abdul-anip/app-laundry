@@ -72,6 +72,16 @@
                     <p class="font-semibold text-gray-800">{{ $order->weight_kg > 0 ? $order->weight_kg . ' Kg' : '-' }}</p>
                 </div>
                 <div>
+                    <p class="text-xs text-gray-400 mb-1">Jadwal Jemput</p>
+                    <p class="font-medium text-gray-800">
+                        @if($order->pickup_date && $order->pickup_time)
+                            {{ \Carbon\Carbon::parse($order->pickup_date)->format('d M Y') }}, {{ \Carbon\Carbon::parse($order->pickup_time)->format('H:i') }}
+                        @else
+                            <span class="text-gray-400">-</span>
+                        @endif
+                    </p>
+                </div>
+                <div>
                     <p class="text-xs text-gray-400 mb-1">Pembayaran</p>
                     <p class="font-medium text-gray-800">{{ ucfirst($order->payment_method ?? '-') }}</p>
                 </div>

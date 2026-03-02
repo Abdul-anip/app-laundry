@@ -168,6 +168,22 @@
     <div class="p-6 bg-white border border-gray-200 rounded-lg shadow">
         <h2 class="mb-4 text-lg font-semibold text-gray-900">Detail Penjemputan</h2>
         
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+            <div>
+                <label for="pickup_date" class="block mb-2 text-sm font-medium text-gray-900">Tanggal Penjemputan <span class="text-red-600">*</span></label>
+                <input type="date" id="pickup_date" name="pickup_date" required 
+                       min="{{ date('Y-m-d') }}"
+                       value="{{ old('pickup_date') }}" 
+                       class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+            </div>
+            
+            <div>
+                <label for="pickup_time" class="block mb-2 text-sm font-medium text-gray-900">Waktu Penjemputan <span class="text-red-600">*</span></label>
+                <input type="time" id="pickup_time" name="pickup_time" required 
+                       value="{{ old('pickup_time') }}" 
+                       class="bg-white border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
+            </div>
+        </div>
 
         <div class="mb-4">
             <label for="distance_km" class="block mb-2 text-sm font-medium text-gray-900">Jarak Penjemputan (KM)</label>

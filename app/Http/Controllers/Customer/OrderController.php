@@ -108,8 +108,8 @@ class OrderController extends Controller
                 'longitude'        => $request->longitude,
                 'fabric_type'      => $request->fabric_type,
                 'weight_kg'        => 0, // Estimasi
-                'pickup_date'      => null,
-                'pickup_time'      => null,
+                'pickup_date'      => $request->pickup_date,
+                'pickup_time'      => $request->pickup_time,
                 'distance_km'      => $pricing['distance_km'],
                 'pickup_fee'       => $pricing['pickup_fee'],
                 'subtotal'         => $pricing['subtotal'],

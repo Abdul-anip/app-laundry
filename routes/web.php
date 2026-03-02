@@ -64,6 +64,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('promos', \App\Http\Controllers\Admin\PromoController::class)
         ->except(['show']);
 
+    // Staff (Admin Management)
+    Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class)
+        ->except(['show']);
+
     // Customers (read-only)
     Route::get('customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('customers.index');
     Route::get('customers/{user}', [\App\Http\Controllers\Admin\CustomerController::class, 'show'])->name('customers.show');

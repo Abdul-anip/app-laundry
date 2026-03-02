@@ -32,7 +32,7 @@ class Order extends Model
         'discount',
         'total_price',
         'status',
-        'description',
+        'notes',
     ];
 
     protected $casts = [

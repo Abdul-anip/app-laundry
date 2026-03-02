@@ -91,9 +91,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 |--------------------------------------------------------------------------
 */
 Route::get('/api/laundry-location', function() {
+    $setting = \App\Models\LandingPageSetting::first();
     return response()->json([
-        'latitude' => -0.1185067,
-        'longitude' => 100.566124,
+        'latitude' => $setting ? (float)$setting->laundry_latitude : -0.1185067,
+        'longitude' => $setting ? (float)$setting->laundry_longitude : 100.566124,
     ]);
 });
 

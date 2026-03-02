@@ -102,6 +102,16 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Notes --}}
+            @if($order->notes)
+            <div class="mt-4 pt-4 border-t border-gray-100">
+                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Catatan Pesanan</p>
+                <div class="bg-yellow-50 text-yellow-800 text-sm p-3 rounded-xl border border-yellow-200/60">
+                    {{ $order->notes }}
+                </div>
+            </div>
+            @endif
         </div>
 
         {{-- Tracking Timeline --}}

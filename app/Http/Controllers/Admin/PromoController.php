@@ -30,11 +30,6 @@ class PromoController extends Controller
         return view('admin.promos.index', compact('promos'));
     }
 
-    public function create()
-    {
-        return view('admin.promos.form', ['promo' => new Promo()]);
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -54,11 +49,6 @@ class PromoController extends Controller
         ]);
 
         return redirect()->route('admin.promos.index')->with('success', 'Promo berhasil ditambahkan!');
-    }
-
-    public function edit(Promo $promo)
-    {
-        return view('admin.promos.form', compact('promo'));
     }
 
     public function update(Request $request, Promo $promo)

@@ -15,11 +15,6 @@ class BundleController extends Controller
         return view('admin.bundles.index', compact('bundles'));
     }
 
-    public function create()
-    {
-        return view('admin.bundles.form', ['bundle' => new Bundle()]);
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -30,11 +25,6 @@ class BundleController extends Controller
 
         Bundle::create($request->only('name', 'price', 'description'));
         return redirect()->route('admin.bundles.index')->with('success', 'Bundle berhasil ditambahkan!');
-    }
-
-    public function edit(Bundle $bundle)
-    {
-        return view('admin.bundles.form', compact('bundle'));
     }
 
     public function update(Request $request, Bundle $bundle)

@@ -15,11 +15,6 @@ class ServiceController extends Controller
         return view('admin.services.index', compact('services'));
     }
 
-    public function create()
-    {
-        return view('admin.services.form', ['service' => new Service()]);
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -29,11 +24,6 @@ class ServiceController extends Controller
 
         Service::create($request->only('name', 'price_per_kg'));
         return redirect()->route('admin.services.index')->with('success', 'Service berhasil ditambahkan!');
-    }
-
-    public function edit(Service $service)
-    {
-        return view('admin.services.form', compact('service'));
     }
 
     public function update(Request $request, Service $service)

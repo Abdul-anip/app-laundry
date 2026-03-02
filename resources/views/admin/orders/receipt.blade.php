@@ -156,10 +156,10 @@
         <span>Rp {{ number_format($order->total_price, 0, ',', '.') }}</span>
     </div>
 
-    @if($order->description)
+    @if($order->notes)
     <div class="notes">
         <strong>Catatan:</strong><br>
-        {{ $order->description }}
+        {{ $order->notes }}
     </div>
     @endif
 

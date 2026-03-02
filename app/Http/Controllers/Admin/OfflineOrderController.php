@@ -32,7 +32,17 @@ class OfflineOrderController extends Controller
         $services = Service::all();
         $bundles  = Bundle::all();
 
-        return view('admin.pos.index', compact('services', 'bundles'));
+        // Get today's stats
+        $today = Carbon::today();
+        $todayOrders = Order::whereDate('created_at', $today)->orderBy('created_at', 'desc')->get();
+        
+        $todayRevenue = $todayOrders->sum('total_price');
+        $todayCount = $todayOrders->count();
+
+        // Get recent orders for table (limit 5 to not clutter the UI)
+        $recentOrders = $todayOrders->take(5);
+
+        return view('admin.pos.index', compact('services', 'bundles', 'todayRevenue', 'todayCount', 'recentOrders'));
     }
 
     /**
@@ -172,7 +182,7 @@ class OfflineOrderController extends Controller
                 'discount'         => $pricing['discount'],
                 'total_price'      => $pricing['total_price'],
                 'status'           => 'process',
-                'description'      => $request->notes,
+                'notes'            => $request->notes,
             ]);
 
             OrderTracking::create([

@@ -149,7 +149,7 @@
                      x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
                      class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-xl">
                     
-                    <form id="bundleForm" method="POST" action="{{ old('_method') == 'PUT' ? route('admin.bundles.update', old('id', 0)) : route('admin.bundles.store') }}">
+                    <form id="bundleForm" method="POST" action="{{ old('_meth   od') == 'PUT' ? route('admin.bundles.update', old('id', 0)) : route('admin.bundles.store') }}">
                         @csrf
                         <div id="methodInput">
                             @if(old('_method') == 'PUT') @method('PUT') @endif

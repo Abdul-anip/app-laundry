@@ -17,6 +17,8 @@ class Order extends Model
         'service_id',
         'bundle_id',
         'promo_id',
+        'courier_id',
+        'courier_task_type',
         'customer_name',
         'phone',
         'address',
@@ -69,6 +71,11 @@ class Order extends Model
     public function promo()
     {
         return $this->belongsTo(Promo::class);
+    }
+
+    public function courier()
+    {
+        return $this->belongsTo(Courier::class);
     }
 
     public function orderTrackings()

@@ -58,7 +58,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load(['user', 'service', 'bundle', 'promo', 'orderTrackings', 'review']);
+        $order->load(['user', 'service', 'bundle', 'promo', 'orderTrackings', 'review', 'courier']);
 
         // Mark relevant notifications as read
         if (auth()->check()) {
@@ -67,7 +67,10 @@ class OrderController extends Controller
                 ->markAsRead();
         }
 
-        return view('admin.orders.show', compact('order'));
+        // Idle couriers untuk dropdown assign
+        $idleCouriers = \App\Models\Courier::where('status', 'idle')->orderBy('name')->get();
+
+        return view('admin.orders.show', compact('order', 'idleCouriers'));
     }
 
     /**
@@ -85,12 +88,43 @@ class OrderController extends Controller
             'pickup'   => 'process',
             'process'  => 'finished',
             'finished' => 'delivered',
+            'delivered'=> 'completed',
             default    => null,
         };
 
         if (!$nextStatus) {
             return back()->with('error', 'Order sudah di status akhir.');
         }
+
+        // --- NEW VALIDATION: Before moving from pending -> pickup ---
+        if ($order->status === 'pending' && $nextStatus === 'pickup') {
+            // 1. Kurir harus sudah dipilih
+            if (!$order->courier_id) {
+                return back()->with('error', 'Harap tugaskan Kurir terlebih dahulu sebelum memulai proses pickup!');
+            }
+
+            // 2. Notifikasi WA Pickup harus sudah dikirim (dicek dari OrderTracking)
+            $waSent = $order->orderTrackings()
+                ->where('description', 'WhatsApp Pickup notification sent')
+                ->exists();
+
+            if (!$waSent) {
+                return back()->with('error', 'Harap klik "Kirim WA Pickup" ke customer terlebih dahulu sebelum memulai pickup!');
+            }
+        }
+        // ------------------------------------------------------------
+
+        // --- NEW VALIDATION: Before moving from pickup -> process ---
+        if ($order->status === 'pickup' && $nextStatus === 'process') {
+            $invoiceWaSent = $order->orderTrackings()
+                ->where('description', 'WhatsApp Invoice notification sent')
+                ->exists();
+
+            if (!$invoiceWaSent) {
+                return back()->with('error', 'Harap klik "Kirim WA Tagihan" ke customer terlebih dahulu sebelum memproses order!');
+            }
+        }
+        // ------------------------------------------------------------
 
         DB::beginTransaction();
         try {
@@ -101,6 +135,28 @@ class OrderController extends Controller
                 'status'      => $nextStatus,
                 'description' => 'Status updated to ' . ucfirst($nextStatus) . ' by Admin',
             ]);
+
+            // Jika admin merubah ke status 'completed', otomatis selesaikan tugas kurir
+            if ($nextStatus === 'completed' && $order->courier_id) {
+                $courier = \App\Models\Courier::find($order->courier_id);
+                if ($courier) {
+                    $courier->increment('points');
+                    
+                    $hasActiveOrders = \App\Models\Order::where('courier_id', $courier->id)
+                        ->where('status', '!=', 'completed')
+                        ->exists();
+
+                    if (!$hasActiveOrders) {
+                        $courier->update(['status' => 'idle']);
+                    }
+
+                    OrderTracking::create([
+                        'order_id'    => $order->id,
+                        'status'      => 'courier_task_completed',
+                        'description' => "Tugas kurir otomatis selesai setelah pesanan diselesaikan (completed) oleh Admin. Poin kurir +1.",
+                    ]);
+                }
+            }
 
             DB::commit();
             return back()->with('success', 'Status order berhasil diupdate ke ' . ucfirst($nextStatus) . '!');
@@ -180,6 +236,18 @@ class OrderController extends Controller
      */
     public function waInvoice(Order $order)
     {
+        $alreadySent = $order->orderTrackings()
+            ->where('description', 'WhatsApp Invoice notification sent')
+            ->exists();
+
+        if (!$alreadySent) {
+            OrderTracking::create([
+                'order_id'    => $order->id,
+                'status'      => 'invoice_notified',
+                'description' => 'WhatsApp Invoice notification sent',
+            ]);
+        }
+
         $text = "Halo {$order->customer_name}, Order {$order->order_code} sudah kami timbang.\n\nBerat: " . floatval($order->weight_kg) . " Kg\nTotal: Rp " . number_format($order->total_price, 0, ',', '.') . "\n\nDetail: " . route('customer.orders.show', $order) . "\n\nOrder segera kami proses. Terima kasih!";
         $url  = 'https://wa.me/' . $this->formatPhone($order->phone) . '?text=' . urlencode($text);
 

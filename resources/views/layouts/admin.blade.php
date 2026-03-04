@@ -133,6 +133,12 @@
             Staf Admin
         </a>
 
+        <a href="{{ route('admin.couriers.index') }}"
+           class="sidebar-item {{ request()->routeIs('admin.couriers.*') ? 'active' : 'inactive' }}">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Kurir
+        </a>
+
         <p class="text-primary-400 text-xs font-semibold uppercase px-4 mt-4 mb-2 tracking-wider">Sistem</p>
 
         <a href="{{ route('admin.reports.index') }}"

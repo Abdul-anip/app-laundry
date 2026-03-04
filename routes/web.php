@@ -68,6 +68,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class)
         ->except(['show']);
 
+    // Couriers
+    Route::resource('couriers', \App\Http\Controllers\Admin\CourierController::class)
+        ->except(['show']);
+    Route::post('orders/{order}/assign-courier', [\App\Http\Controllers\Admin\CourierController::class, 'assignToOrder'])->name('orders.assign_courier');
+    Route::post('couriers/{courier}/complete-task', [\App\Http\Controllers\Admin\CourierController::class, 'completeTask'])->name('couriers.complete_task');
+
     // Customers (read-only)
     Route::get('customers', [\App\Http\Controllers\Admin\CustomerController::class, 'index'])->name('customers.index');
     Route::get('customers/{user}', [\App\Http\Controllers\Admin\CustomerController::class, 'show'])->name('customers.show');

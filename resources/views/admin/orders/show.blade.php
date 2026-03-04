@@ -170,11 +170,12 @@
         {{-- Advance Status --}}
         @php
             $nextLabel = match($order->status) {
-                'pending'  => 'Start Pickup',
-                'pickup'   => 'Start Process',
-                'process'  => 'Finish Order',
-                'finished' => 'Deliver Order',
-                default    => null,
+                'pending'   => 'Start Pickup',
+                'pickup'    => 'Start Process',
+                'process'   => 'Finish Order',
+                'finished'  => 'Deliver Order',
+                'delivered' => 'Selesaikan Order',
+                default     => null,
             };
         @endphp
         @if($nextLabel)
@@ -300,6 +301,89 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                     Kirim WA Update Status
                 </a>
+            </div>
+        </div>
+
+        {{-- Kurir --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5" x-data="{ showAssign: false }">
+            <h3 class="font-bold text-gray-800 mb-3 text-sm">Kurir</h3>
+
+            {{-- Kurir yang Sedang Ditugaskan --}}
+            @if($order->courier)
+                <div class="flex items-center gap-3 mb-3 p-3 rounded-xl
+                    {{ $order->courier->status === 'on_duty' ? 'bg-yellow-50 border border-yellow-100' : 'bg-gray-50 border border-gray-100' }}">
+                    <div class="w-9 h-9 rounded-full bg-yellow-100 text-yellow-700 flex items-center justify-center font-bold text-sm shrink-0">
+                        {{ strtoupper(substr($order->courier->name, 0, 1)) }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-gray-800 text-sm">{{ $order->courier->name }}</p>
+                        <p class="text-xs text-gray-500">{{ $order->courier->phone }}</p>
+                        @php
+                            $taskLabels = ['pickup'=>'Jemput','delivery'=>'Antar','both'=>'Jemput & Antar'];
+                        @endphp
+                        <span class="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs font-medium px-2 py-0.5 rounded-full mt-0.5">
+                            {{ $taskLabels[$order->courier_task_type] ?? '-' }}
+                        </span>
+                    </div>
+                    @php
+                        $waCourier = preg_replace('/[^0-9]/', '', $order->courier->phone);
+                        if (str_starts_with($waCourier, '0')) $waCourier = '62' . substr($waCourier, 1);
+                    @endphp
+                    <a href="https://wa.me/{{ $waCourier }}" target="_blank"
+                       class="shrink-0 p-2 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg transition-colors" title="WA Kurir">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.562 4.14 1.535 5.876L.057 23.617a.5.5 0 00.609.61l5.957-1.51A11.943 11.943 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.927a9.912 9.912 0 01-5.031-1.371l-.361-.216-3.738.947.994-3.612-.235-.373A9.916 9.916 0 012.073 12C2.073 6.516 6.516 2.073 12 2.073S21.927 6.516 21.927 12 17.484 21.927 12 21.927z"/></svg>
+                    </a>
+                </div>
+                <button @click="showAssign = !showAssign"
+                    class="w-full text-xs text-primary-600 hover:text-primary-800 font-medium py-1.5 text-center transition-colors">
+                    <span x-text="showAssign ? '↑ Tutup' : '↓ Ganti Kurir'"></span>
+                </button>
+            @else
+                <p class="text-xs text-gray-400 mb-3">Belum ada kurir yang ditugaskan.</p>
+                <button @click="showAssign = !showAssign"
+                    class="w-full bg-primary-50 hover:bg-primary-100 text-primary-700 font-medium py-2 px-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                    Tugaskan Kurir
+                </button>
+            @endif
+
+            {{-- Form Assign Kurir --}}
+            <div x-show="showAssign" x-cloak class="mt-3 pt-3 border-t border-gray-100">
+                @if($idleCouriers->isEmpty())
+                    <p class="text-xs text-center text-gray-400 py-2">
+                        Tidak ada kurir yang idle saat ini.<br>
+                        <a href="{{ route('admin.couriers.index') }}" class="text-primary-600 hover:underline">Kelola Kurir →</a>
+                    </p>
+                @else
+                    <form method="POST" action="{{ route('admin.orders.assign_courier', $order) }}" class="space-y-3">
+                        @csrf
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Pilih Kurir</label>
+                            <select name="courier_id" required
+                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                                <option value="">-- Pilih Kurir --</option>
+                                @foreach($idleCouriers as $c)
+                                    <option value="{{ $c->id }}" {{ $order->courier_id == $c->id ? 'selected' : '' }}>
+                                        {{ $c->name }} (⭐ {{ $c->points }} poin)
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Jenis Tugas</label>
+                            <select name="courier_task_type" required
+                                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                                <option value="pickup" {{ $order->courier_task_type === 'pickup' ? 'selected' : '' }}>🛵 Jemput Laundry</option>
+                                <option value="delivery" {{ $order->courier_task_type === 'delivery' ? 'selected' : '' }}>📦 Antar Laundry</option>
+                                <option value="both" {{ $order->courier_task_type === 'both' ? 'selected' : '' }}>🔄 Jemput & Antar</option>
+                            </select>
+                        </div>
+                        <button type="submit"
+                                class="w-full bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium py-2 rounded-lg transition-colors">
+                            Tugaskan
+                        </button>
+                    </form>
+                @endif
             </div>
         </div>
 

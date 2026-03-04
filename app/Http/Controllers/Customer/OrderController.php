@@ -200,6 +200,29 @@ class OrderController extends Controller
                 'description' => 'Order received and confirmed by customer',
             ]);
 
+            // Auto-complete courier task if a courier was assigned
+            if ($order->courier_id) {
+                $courier = \App\Models\Courier::find($order->courier_id);
+                if ($courier) {
+                    $courier->increment('points');
+                    
+                    // Check if courier has other active orders
+                    $hasActiveOrders = \App\Models\Order::where('courier_id', $courier->id)
+                        ->where('status', '!=', 'completed')
+                        ->exists();
+
+                    if (!$hasActiveOrders) {
+                        $courier->update(['status' => 'idle']);
+                    }
+                    
+                    \App\Models\OrderTracking::create([
+                        'order_id'    => $order->id,
+                        'status'      => 'courier_task_completed',
+                        'description' => "Tugas kurir otomatis selesai setelah konfirmasi customer. Poin kurir +1.",
+                    ]);
+                }
+            }
+
             // Award Points safely (Idempotent)
             $points = floor($order->total_price / 1000);
             if ($points > 0 && $order->user) {

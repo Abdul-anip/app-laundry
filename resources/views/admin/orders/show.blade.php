@@ -295,6 +295,14 @@
                     Kirim WA Tagihan
                 </a>
                 @endif
+
+                @if($order->status === 'finished')
+                <a href="{{ route('admin.orders.wa-delivery', $order) }}" target="_blank"
+                   class="flex items-center justify-center gap-2 w-full bg-green-50 hover:bg-green-100 text-green-700 font-medium py-2 px-3 rounded-xl transition-colors text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                    Kirim WA Pengiriman
+                </a>
+                @endif
                 
                 <a href="{{ route('admin.orders.wa-status', $order) }}" target="_blank"
                    class="flex items-center justify-center gap-2 w-full bg-green-50 hover:bg-green-100 text-green-700 font-medium py-2 px-3 rounded-xl transition-colors text-sm">

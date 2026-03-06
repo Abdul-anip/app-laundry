@@ -115,16 +115,28 @@ class OrderController extends Controller
         // ------------------------------------------------------------
 
         // --- NEW VALIDATION: Before moving from pickup -> process ---
-        if ($order->status === 'pickup' && $nextStatus === 'process') {
-            $invoiceWaSent = $order->orderTrackings()
-                ->where('description', 'WhatsApp Invoice notification sent')
-                ->exists();
+    if ($order->status === 'pickup' && $nextStatus === 'process') {
+        $invoiceWaSent = $order->orderTrackings()
+            ->where('description', 'WhatsApp Invoice notification sent')
+            ->exists();
 
-            if (!$invoiceWaSent) {
-                return back()->with('error', 'Harap klik "Kirim WA Tagihan" ke customer terlebih dahulu sebelum memproses order!');
-            }
+        if (!$invoiceWaSent) {
+            return back()->with('error', 'Harap klik "Kirim WA Tagihan" ke customer terlebih dahulu sebelum memproses order!');
         }
-        // ------------------------------------------------------------
+    }
+    // ------------------------------------------------------------
+
+    // --- NEW VALIDATION: Before moving from finished -> delivered ---
+    if ($order->status === 'finished' && $nextStatus === 'delivered') {
+        $deliveryWaSent = $order->orderTrackings()
+            ->where('description', 'WhatsApp Delivery notification sent')
+            ->exists();
+
+        if (!$deliveryWaSent) {
+            return back()->with('error', 'Harap klik "Kirim WA Pengiriman" ke customer terlebih dahulu sebelum memproses pengiriman!');
+        }
+    }
+    // ------------------------------------------------------------
 
         DB::beginTransaction();
         try {
@@ -137,27 +149,27 @@ class OrderController extends Controller
             ]);
 
             // Jika admin merubah ke status 'completed', otomatis selesaikan tugas kurir
-            if ($nextStatus === 'completed' && $order->courier_id) {
-                $courier = \App\Models\Courier::find($order->courier_id);
-                if ($courier) {
-                    $courier->increment('points');
-                    
-                    $hasActiveOrders = \App\Models\Order::where('courier_id', $courier->id)
-                        ->where('status', '!=', 'completed')
-                        ->exists();
+        if ($nextStatus === 'completed' && $order->courier_id) {
+            $courier = \App\Models\Courier::find($order->courier_id);
+            if ($courier) {
+                $pointsToAdd = $order->courier_task_type === 'both' ? 10 : 5;
+                $courier->increment('points', $pointsToAdd);
+                
+                $hasActiveOrders = \App\Models\Order::where('courier_id', $courier->id)
+                    ->where('status', '!=', 'completed')
+                    ->exists();
 
-                    if (!$hasActiveOrders) {
-                        $courier->update(['status' => 'idle']);
-                    }
-
-                    OrderTracking::create([
-                        'order_id'    => $order->id,
-                        'status'      => 'courier_task_completed',
-                        'description' => "Tugas kurir otomatis selesai setelah pesanan diselesaikan (completed) oleh Admin. Poin kurir +1.",
-                    ]);
+                if (!$hasActiveOrders) {
+                    $courier->update(['status' => 'idle']);
                 }
-            }
 
+                OrderTracking::create([
+                    'order_id'    => $order->id,
+                    'status'      => 'courier_task_completed',
+                    'description' => "Tugas kurir otomatis selesai setelah pesanan diselesaikan (completed) oleh Admin. Poin kurir +{$pointsToAdd}.",
+                ]);
+            }
+        }
             DB::commit();
             return back()->with('success', 'Status order berhasil diupdate ke ' . ucfirst($nextStatus) . '!');
         } catch (\Exception $e) {
@@ -249,6 +261,29 @@ class OrderController extends Controller
         }
 
         $text = "Halo {$order->customer_name}, Order {$order->order_code} sudah kami timbang.\n\nBerat: " . floatval($order->weight_kg) . " Kg\nTotal: Rp " . number_format($order->total_price, 0, ',', '.') . "\n\nDetail: " . route('customer.orders.show', $order) . "\n\nOrder segera kami proses. Terima kasih!";
+        $url  = 'https://wa.me/' . $this->formatPhone($order->phone) . '?text=' . urlencode($text);
+
+        return redirect()->away($url);
+    }
+
+    /**
+     * WhatsApp: Delivery Notification
+     */
+    public function waDelivery(Order $order)
+    {
+        $alreadySent = $order->orderTrackings()
+            ->where('description', 'WhatsApp Delivery notification sent')
+            ->exists();
+
+        if (!$alreadySent) {
+            OrderTracking::create([
+                'order_id'    => $order->id,
+                'status'      => 'delivery_notified',
+                'description' => 'WhatsApp Delivery notification sent',
+            ]);
+        }
+
+        $text = "Halo {$order->customer_name}, cucian Anda (Order {$order->order_code}) sudah selesai dan sedang dalam proses pengiriman oleh kurir kami menuju lokasi Anda. Mohon ditunggu ya!\n\nDetail: " . route('customer.orders.show', $order) . "\n\nTerima kasih!";
         $url  = 'https://wa.me/' . $this->formatPhone($order->phone) . '?text=' . urlencode($text);
 
         return redirect()->away($url);

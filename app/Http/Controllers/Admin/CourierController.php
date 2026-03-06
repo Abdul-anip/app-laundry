@@ -144,26 +144,36 @@ class CourierController extends Controller
     }
 
     /**
-     * Selesaikan tugas kurir — kurir kembali idle, poin +1
+     * Selesaikan tugas kurir — kurir kembali idle, poin + berdasarkan tugas
      */
     public function completeTask(Courier $courier)
     {
         DB::beginTransaction();
         try {
-            // Tambah poin kurir
-            $courier->increment('points');
-
-            // Cek apakah kurir masih ada order aktif lainnya
-            $hasActiveOrders = Order::where('courier_id', $courier->id)
+            // Dapatkan order aktif kurir sebelum diselesaikan
+            $activeOrders = Order::where('courier_id', $courier->id)
                 ->where('status', '!=', 'completed')
-                ->exists();
+                ->get();
 
-            if (!$hasActiveOrders) {
-                $courier->update(['status' => 'idle']);
+            $pointsToAdd = 0;
+            foreach ($activeOrders as $activeOrder) {
+                // Tambah 10 poin jika tugasnya jemput & antar, 5 poin jika hanya salah satu
+                $pointsToAdd += ($activeOrder->courier_task_type === 'both') ? 10 : 5;
+            }
+            
+            // At least add 5 points if they marked it complete without active orders (fallback)
+            if ($pointsToAdd === 0) {
+               $pointsToAdd = 5; 
             }
 
+            // Tambah poin kurir
+            $courier->increment('points', $pointsToAdd);
+
+            // Set kurir menjadi idle karena tugas diselesaikan manual
+            $courier->update(['status' => 'idle']);
+
             DB::commit();
-            return back()->with('success', "Tugas kurir {$courier->name} selesai! Poin bertambah menjadi {$courier->fresh()->points}.");
+            return back()->with('success', "Tugas kurir {$courier->name} selesai! Poin bertambah +{$pointsToAdd} menjadi {$courier->fresh()->points}.");
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Gagal menyelesaikan tugas: ' . $e->getMessage());

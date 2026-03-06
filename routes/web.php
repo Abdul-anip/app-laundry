@@ -43,6 +43,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('orders/{order}/weight', [\App\Http\Controllers\Admin\OrderController::class, 'inputWeight'])->name('orders.weight');
     Route::get('orders/{order}/wa-pickup', [\App\Http\Controllers\Admin\OrderController::class, 'waPickup'])->name('orders.wa-pickup');
     Route::get('orders/{order}/wa-invoice', [\App\Http\Controllers\Admin\OrderController::class, 'waInvoice'])->name('orders.wa-invoice');
+    Route::get('orders/{order}/wa-delivery', [\App\Http\Controllers\Admin\OrderController::class, 'waDelivery'])->name('orders.wa-delivery');
     Route::get('orders/{order}/wa-status', [\App\Http\Controllers\Admin\OrderController::class, 'waStatus'])->name('orders.wa-status');
     Route::get('orders/{order}/print', [\App\Http\Controllers\Admin\OrderController::class, 'printReceipt'])->name('orders.print');
 

@@ -1,172 +1,113 @@
-# 🧺 VIP Laundry — Premium Laundry Management System
+# 🧺 VIP Laundry — Laundry Management & POS System
 
-Sistem Informasi Manajemen Laundry berbasis web yang modern, lengkap, dan responsif. Dibangun dengan **Laravel 12** dan dengan panel admin berbasis **Blade + Tailwind CSS** yang cepat dan intuitif.
+> A premium web-based laundry management system with a POS cashier, location tracking, and admin analytics dashboard.
 
----
-
-## ✨ Fitur Unggulan
-
-### 🏢 Panel Admin
-
-| Modul | Deskripsi |
-|---|---|
-| **Dashboard** | Statistik pendapatan bulanan, total order, pelanggan baru, order aktif, grafik pendapatan 30 hari, donut chart status, dan tabel order terbaru. |
-| **POS System** | Input order offline (Walk-in & Member), pemilihan layanan Kiloan atau Satuan/Bundle, validasi promo otomatis, auto-save pelanggan baru, deteksi lokasi (Geolocation + OpenStreetMap), cetak struk PDF. |
-| **Manajemen Order** | Lacak & kelola status cucian: `pending → pickup → process → finished → delivered → completed`. Filter multi-status, pencarian by kode/nama/HP, input berat aktual & recalculate harga, advance status, lihat riwayat tracking order. |
-| **WhatsApp Integration** | Notifikasi otomatis ke pelanggan via deep link WA: konfirmasi penjemputan, pengiriman tagihan/invoice, dan update status order. |
-| **Cetak / Download** | Unduh struk order (PDF) dan laporan keuangan harian/bulanan (PDF). |
-| **Layanan & Bundle** | Kelola jenis layanan (harga/kg) dan paket Bundle (satuan/harga tetap). |
-| **Promo & Diskon** | Buat & kelola promo dengan tipe `persen` atau `nominal`, lengkap dengan kode promo untuk validasi di POS. |
-| **Manajemen Pelanggan** | Lihat database member, riwayat transaksi, dan total poin loyalitas. |
-| **Ulasan** | Pantau semua review & rating pelanggan. |
-| **Notifikasi Admin** | Bell notifikasi real-time untuk order baru, dengan fitur tandai-baca & tandai-semua-baca. |
-| **Pengaturan** | Konfigurasi informasi toko, tampilan landing page, dan parameter sistem. |
-
-### 📱 Portal Pelanggan (Customer)
-
-| Modul | Deskripsi |
-|---|---|
-| **Dashboard** | Halaman utama pelanggan setelah login. |
-| **Buat Order** | Pesan layanan laundry (pickup/antar-jemput) dari rumah, pilih layanan atau bundle. |
-| **Riwayat Order** | Lihat semua order beserta status terkini dan rincian biaya. |
-| **Konfirmasi Terima** | Konfirmasi penerimaan cucian. Jika tidak dikonfirmasi dalam 24 jam setelah status `delivered`, sistem otomatis menandai sebagai `completed`. |
-| **Ulasan & Rating** | Beri review & bintang untuk order yang sudah `completed`. |
-| **Download Bukti** | Unduh bukti/struk order. |
-| **Loyalty Points** | Kumpulkan poin dari setiap transaksi (1 poin per Rp 1.000). |
-
-### 🌐 Halaman Publik
-
-- **Landing Page** — Tampilan profesional dengan konten yang bisa dikonfigurasi lewat panel Setting.
-- **Order Tracking Publik** — Lacak status cucian hanya dengan memasukkan kode order (tanpa login).
+[![Laravel](https://img.shields.io/badge/Laravel%2012-0A0A0A?style=flat-square&logo=laravel&logoColor=white)]()
+[![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-0A0A0A?style=flat-square&logo=tailwindcss&logoColor=white)]()
+[![MySQL](https://img.shields.io/badge/MySQL-0A0A0A?style=flat-square&logo=mysql&logoColor=white)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-0A0A0A?style=flat-square)]()
 
 ---
 
-## 🛠️ Teknologi
+## 📋 About The Project
 
-| Layer | Teknologi |
-|---|---|
-| **Framework** | [Laravel 12](https://laravel.com) |
-| **Admin UI** | Custom Blade Layout + [Tailwind CSS](https://tailwindcss.com) |
-| **Auth** | [Laravel Breeze](https://laravel.com/docs/starter-kits) |
-| **PDF** | [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf) |
-| **Chart Trend** | [flowframe/laravel-trend](https://github.com/Flowframe/laravel-trend) |
-| **Database** | MySQL / SQLite |
-| **Queue** | Laravel Queue (untuk notifikasi) |
+VIP Laundry is a comprehensive management system built for small-to-medium laundry businesses. It covers everything from customer order management to cashier operations, making it easier for business owners to manage their day-to-day operations digitally.
 
 ---
 
-## 🚀 Panduan Instalasi
+## ✨ Features
 
-### Prasyarat
-- PHP >= 8.2
+- **Admin Dashboard** — Overview of orders, revenue, and customer stats
+- **POS Cashier** — Weight-based price calculator with instant receipt generation
+- **Order Management** — Create, track, and update laundry order status
+- **Customer Database** — Track customer history and contacts
+- **OpenStreetMap Integration** — Display business location and delivery zones on an interactive map
+- **PDF Receipt Export** — Generate and print professional receipts
+- **Role-Based Access** — Admin and Cashier roles with separate permissions
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|:---|:---|
+| Backend | Laravel 12 (PHP) |
+| Frontend | Blade Templates, Alpine.js |
+| Styling | Tailwind CSS |
+| Maps | OpenStreetMap / Leaflet.js API |
+| Database | MySQL |
+| Dev Tools | Composer, NPM, Vite |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- PHP 8.2+
 - Composer
-- Node.js & NPM
-- MySQL / MariaDB (atau SQLite untuk development)
+- Node.js 18+
+- MySQL 8.0+
 
-### Langkah Instalasi
+### Installation
 
+**1. Clone the repository**
 ```bash
-# 1. Clone repository
-git clone https://github.com/username/laundry-app.git
-cd laundry-app
-
-# 2. Install semua dependensi (PHP + JS + migrasi + build aset)
-composer run setup
+git clone https://github.com/Abdul-anip/app-laundry.git
+cd app-laundry
 ```
 
-> Perintah `composer run setup` secara otomatis menjalankan: `composer install`, copy `.env`, generate key, migrasi database, `npm install`, dan `npm run build`.
+**2. Install dependencies**
+```bash
+composer install
+npm install
+```
 
-### Konfigurasi Environment
+**3. Environment setup**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Buka file `.env` dan sesuaikan konfigurasi berikut:
-
+**4. Configure database** in `.env`:
 ```env
-APP_NAME="VIP Laundry"
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=laundry_app
+DB_DATABASE=laundry_db
 DB_USERNAME=root
-DB_PASSWORD=
+DB_PASSWORD=your_password
 ```
 
-### Jalankan Aplikasi (Mode Development)
-
+**5. Run migrations & seeders**
 ```bash
-composer run dev
+php artisan migrate --seed
 ```
 
-Perintah ini akan menjalankan secara bersamaan:
-- `php artisan serve` — Web server
-- `php artisan queue:listen` — Antrian notifikasi
-- `php artisan pail` — Log monitoring
-- `npm run dev` — Vite HMR
+**6. Build frontend & start server**
+```bash
+npm run dev
+php artisan serve
+```
 
-Akses aplikasi di: **`http://localhost:8000`**
-Admin Panel di: **`http://localhost:8000/admin`**
+**7. Access the app**
+
+Open [http://localhost:8000](http://localhost:8000) and login with the seeded admin credentials.
 
 ---
 
-## 👤 Akun Demo Default
+## 📸 Screenshots
 
-> Akun dibuat otomatis oleh seeder saat menjalankan `php artisan migrate --seed`.
-
-| Role | Email | Password | Akses Panel |
-|---|---|---|---|
-| **Admin** | `admin@laundry.com` | `password` | `/admin` |
-| **Customer** | `customer@laundry.com` | `password` | `/customer/dashboard` |
+> *(Add screenshots of the POS cashier view, admin dashboard, and map view here)*
 
 ---
 
-## 📂 Struktur Direktori Utama
+## 📄 License
 
-```
-app/
-├── Http/Controllers/
-│   ├── Admin/          # Dashboard, Order, POS, Laporan, dll.
-│   ├── Customer/       # Order & Review pelanggan
-│   └── TrackingController.php
-├── Models/             # User, Order, Service, Bundle, Promo, Review, dll.
-├── Notifications/      # Notifikasi order baru & review
-└── Console/Commands/   # Artisan command (auto-confirm order)
-
-resources/views/
-├── admin/              # Semua tampilan panel admin
-├── customer/           # Tampilan portal pelanggan
-└── welcome.blade.php   # Landing page publik
-
-database/migrations/    # 13 file migrasi
-```
+Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
-## 🔄 Alur Status Order
+## 👤 Author
 
-```
-pending → pickup → process → finished → delivered → completed
-                                ↓ (otomatis setelah 24 jam jika tidak dikonfirmasi)
-```
+**Abdul Hanif** · D4 Software Engineering Technology, Politeknik Negeri Padang
 
-| Status | Keterangan |
-|---|---|
-| `pending` | Order baru masuk |
-| `pickup` | Kurir sedang menjemput |
-| `process` | Sedang dicuci |
-| `finished` | Selesai dicuci, siap diantar |
-| `delivered` | Sudah diantarkan ke pelanggan |
-| `completed` | Pelanggan mengkonfirmasi penerimaan |
-
----
-
-## 📝 Catatan
-
-- **Poin Loyalitas:** Dihitung otomatis saat order mencapai status `finished` (1 poin per Rp 1.000).
-- **Auto-Complete:** Order `delivered` yang tidak dikonfirmasi oleh pelanggan akan otomatis jadi `completed` setelah 24 jam via Artisan Command.
-- **Geolocation:** Fitur deteksi lokasi pada POS memerlukan izin browser & koneksi internet (menggunakan OpenStreetMap).
-- **Produksi:** Jalankan `php artisan config:cache && php artisan route:cache && php artisan view:cache` untuk performa optimal saat deploy.
-
----
-
-Dibuat dengan ❤️ untuk kemudahan bisnis laundry Anda.
+[![Portfolio](https://img.shields.io/badge/Portfolio-0A0A0A?style=flat-square&logo=vercel&logoColor=white)](https://abdul-anip.github.io/CV/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A0A0A?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/abdul-hanif-78649b331)

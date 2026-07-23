@@ -1,21 +1,28 @@
-# 🧺 VIP Laundry — Laundry Management & POS System
+# VIP Laundry — Laundry Management & POS System
 
 > A premium web-based laundry management system with a POS cashier, location tracking, and admin analytics dashboard.
 
 [![Laravel](https://img.shields.io/badge/Laravel%2012-0A0A0A?style=flat-square&logo=laravel&logoColor=white)]()
 [![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-0A0A0A?style=flat-square&logo=tailwindcss&logoColor=white)]()
 [![MySQL](https://img.shields.io/badge/MySQL-0A0A0A?style=flat-square&logo=mysql&logoColor=white)]()
-[![License: MIT](https://img.shields.io/badge/License-MIT-0A0A0A?style=flat-square)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-0A0A0A?style=flat-square)](LICENSE)
 
 ---
 
-## 📋 About The Project
+## About The Project
 
 VIP Laundry is a comprehensive management system built for small-to-medium laundry businesses. It covers everything from customer order management to cashier operations, making it easier for business owners to manage their day-to-day operations digitally.
 
 ---
 
-## ✨ Features
+## Screenshots
+
+**Admin Dashboard**
+![Admin Dashboard](screenshots/dashboard.jpg)
+
+---
+
+## Features
 
 - **Admin Dashboard** — Overview of orders, revenue, and customer stats
 - **POS Cashier** — Weight-based price calculator with instant receipt generation
@@ -27,7 +34,7 @@ VIP Laundry is a comprehensive management system built for small-to-medium laund
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |:---|:---|
@@ -40,7 +47,31 @@ VIP Laundry is a comprehensive management system built for small-to-medium laund
 
 ---
 
-## 🚀 Getting Started
+## Folder Structure
+
+```
+app-laundry/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/    # Request handlers (Admin, Cashier, etc.)
+│   │   └── Middleware/     # Auth & role middleware
+│   └── Models/             # Eloquent ORM models
+├── database/
+│   ├── migrations/         # DB schema definitions
+│   └── seeders/            # Sample data seeders
+├── resources/
+│   └── views/              # Blade template files
+│       ├── admin/          # Admin panel views
+│       └── cashier/        # POS cashier views
+├── routes/
+│   └── web.php             # Route definitions
+├── public/                 # Entry point & static assets
+└── screenshots/            # Project screenshots
+```
+
+---
+
+## Getting Started
 
 ### Prerequisites
 
@@ -93,21 +124,15 @@ Open [http://localhost:8000](http://localhost:8000) and login with the seeded ad
 
 ---
 
-## 📸 Screenshots
+## License
 
-> *(Add screenshots of the POS cashier view, admin dashboard, and map view here)*
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ---
 
-## 👤 Author
+## Author
 
-**Abdul Hanif** · D4 Software Engineering Technology, Politeknik Negeri Padang
+**Abdul Hanif** — D4 Software Engineering Technology, Politeknik Negeri Padang
 
 [![Portfolio](https://img.shields.io/badge/Portfolio-0A0A0A?style=flat-square&logo=vercel&logoColor=white)](https://abdul-anip.github.io/CV/)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A0A0A?style=flat-square&logo=linkedin&logoColor=white)](https://linkedin.com/in/abdul-hanif-78649b331)
